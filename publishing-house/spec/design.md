@@ -97,5 +97,5 @@ Intermediate
   - **Note:** Sizing will be confirmed and adjusted during infra review once per-user workload resource profiles are measured from a test deployment with 15 tenants
 - **Automation approach:** Ansible + GitOps (Helm + ArgoCD); bootstrap-infra deploys cluster-wide services; bootstrap-tenant (new) provisions per-user namespace and RBAC via ApplicationSet
 - **AI/MaaS:** MaaS, open-source model (`gpt-oss-120b`, served via in-cluster LiteLLM endpoint)
-- **External services:** Unknown — to be confirmed during development/infra review (GitHub access required for Modules 5–6)
+- **External services:** `github.com` — required during provisioning via bootstrap/showroom role for cloning `rh-ai-quickstart/multi-agent-loan-origination.git` (used in Modules 5–6)
 - **Non-GA products:** Red Hat OpenShift AI 3.5 — not GA at intake time; expected to GA before catalog release but not confirmed. Pre-GA access via RHDP internal provisioning. Infra reviewer to validate GA status at staging time.

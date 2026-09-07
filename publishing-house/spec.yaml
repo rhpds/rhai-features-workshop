@@ -77,7 +77,8 @@ spec:
     non_ga_access_plan: "Pre-GA access via RHDP internal provisioning; anticipated\
       \ to be GA before catalog item release, but not confirmed \u2014 infra reviewer\
       \ to validate status at staging time"
-    external_services: []
+    external_services:
+    - github.com  # cloned during provisioning via bootstrap/showroom role (Modules 5-6)
     gpu_nodes: 0
     gpu_type: ''
   duration_hours: 2
@@ -101,7 +102,10 @@ tracking:
 approval_checklist:
   content:
     prerequisites_verifiable: false
-    assessment_strategy: ''
+    assessment_strategy: 'Trust-based — no automated validation. Students confirm
+      completion by observing expected results (traces visible in MLflow, data shown
+      in Grafana dashboards, LogQL queries returning results). No automated solve/validate
+      buttons or scoring.'
     design_overview: "This intermediate-level hands-on lab uses the Fed Aura Capital\
       \ mortgage lending application \u2014 a five-agent LangGraph system that debuted\
       \ at Red Hat Summit 2026 \u2014 to teach AgentOps observability using Red Hat\
@@ -187,7 +191,7 @@ approval_checklist:
     - id: 10cf228b-8107-4b7a-85fc-7a70852f42a7
       text: Not enough information provided in the intake form. Please run intake
         again and fill all the information based on actual lab,
-      resolved: false
+      resolved: true
       reviewer: psrivast@redhat.com
       timestamp: '2026-08-25T09:42:51.751407+00:00'
   infra:
