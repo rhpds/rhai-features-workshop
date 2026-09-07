@@ -7,65 +7,86 @@ project:
   showroom_type: classic
   intake_type: migration
   automation_type: both
-  description: Default workshop used for AI Roadshows and many other customer facing
-    activities.
+  description: Traditional AI demos show a model answering questions. Production AI
+    requires a complete platform — model serving, governed access, domain grounding,
+    tool integration, observability, evaluation, and security. This workshop takes
+    you through the full Red Hat OpenShift AI product portfolio by putting you inside
+    a real production deployment at Fed Aura Capital.
   jira_ticket: RHDPCD-1187
   workflow_id: d5fb7218-8b36-4d55-b2e8-080e7bde1d9a
 spec:
-  title: 'Fed Aura Capital Workshop: AgentOps Observability with Red Hat OpenShift
-    AI'
+  title: Fed Aura Capital AI Workshop with Red Hat OpenShift AI
   learning_objectives:
-  - Explore a production-pattern multi-agent AI application and identify the observability
-    gap that conventional monitoring tools cannot close
-  - "Monitor AI-specific metrics and KPIs \u2014 including LLM token usage, inference\
-    \ latency, and tool-call success rates \u2014 using pre-deployed Grafana dashboards"
-  - Analyze structured application logs for a multi-agent system using LokiStack and
-    LogQL queries
-  - Configure and use MLflow tracing to capture end-to-end agent execution spans,
-    from input/output shields through LLM calls and tool invocations
-  - Analyze agent traces to identify latency hotspots, failed tool calls, and multi-turn
-    conversation context across user sessions
-  - Deploy an automated evaluation pipeline and verify prompt regression detection
-    using Red Hat OpenShift AI Data Science Pipelines and MLflow Prompt Registry (optional)
+  - Deploy an LLM from the RHOAI Model Catalog on CPU and with GPU acceleration using
+    llm-d, and benchmark quantized vs. unquantized inference performance using TTFT
+    metrics
+  - Publish a deployed model as a governed MaaS endpoint with rate-limited API keys
+    and consume it from a developer tool
+  - Design and version domain-specific system prompts using the GenAI Playground and
+    save them to the MLflow Prompt Registry
+  - Configure and run an AutoML binary classification job to build a predictive loan
+    underwriting model and interpret feature importance
+  - Enable RAG-grounded responses by uploading a private policy document and validate
+    that retrieved facts are grounded in the source
+  - Deploy OGX as a unified agentic API surface and configure provider routing with
+    failover between self-hosted and remote model providers
+  - Inspect MCP server registrations and gateway routes, and invoke mortgage domain
+    tools through GenAI Playground
+  - Analyze MLflow traces to reconstruct agent decision paths, and run automated evaluation
+    pipelines to measure agent quality across prompt versions
+  - Configure NeMo Guardrails, deploy an agent into an OpenShell Agent Sandbox with
+    deny-by-default policies, and review OCSF audit logs
   modules:
   - id: module-01
-    title: The Agentic App and Why Observability Matters
+    title: Model Catalog and Deployment
     duration_min: 25
     status: not_started
   - id: module-02
-    title: Observability Pillars, Concepts, and Personas
-    duration_min: 15
+    title: Models as a Service
+    duration_min: 20
     status: not_started
   - id: module-03
-    title: Metrics and Logs for Agentic Applications
-    duration_min: 30
+    title: GenAI Playground
+    duration_min: 20
     status: not_started
   - id: module-04
-    title: Tracing and MLflow
-    duration_min: 35
+    title: Predictive AI with AutoML
+    duration_min: 25
     status: not_started
   - id: module-05
-    title: Agent and LLM Evaluations (Optional)
-    duration_min: 55
+    title: RAG and AutoRAG
+    duration_min: 20
     status: not_started
   - id: module-06
-    title: From Development to Production (Optional)
-    duration_min: 55
+    title: 'OGX: Unified Agentic API Surface'
+    duration_min: 20
+    status: not_started
+  - id: module-07
+    title: MCP Ecosystem
+    duration_min: 25
+    status: not_started
+  - id: module-08
+    title: Evaluations and Tracing with MLflow
+    duration_min: 30
+    status: not_started
+  - id: module-09
+    title: AI Safety and Secure Agent Onboarding
+    duration_min: 30
     status: not_started
   environment:
     platform: ocp
     topology: shared-cluster
-    cloud_provider: cnv
+    cloud_provider: aws
     max_concurrent_users: 15
-    ocp_version: '4.20'
+    ocp_version: '4.22'
     cluster_type: multinode
     control_plane_instance_count: 3
-    control_plane_cpu: 16
-    control_plane_ram_gb: 64
-    worker_count: 3
-    worker_cpu: 64
-    worker_ram_gb: 256
-    worker_disk_gb: 2500
+    control_plane_cpu: 16       # c6a.4xlarge
+    control_plane_ram_gb: 32    # c6a.4xlarge
+    worker_count: 9             # dynamic: max(ceil(num_users * 0.3) + 4, 5); value shown for 15 users
+    worker_cpu: 16              # m6a.4xlarge
+    worker_ram_gb: 64           # m6a.4xlarge
+    worker_disk_gb: 500
     vms_per_student: []
     aap_version: ''
     ai_requirement: maas
@@ -75,13 +96,13 @@ spec:
     non_ga_products:
     - Red Hat OpenShift AI 3.5
     non_ga_access_plan: "Pre-GA access via RHDP internal provisioning; anticipated\
-      \ to be GA before catalog item release, but not confirmed \u2014 infra reviewer\
+      \ to be GA before catalog item release, but not confirmed — infra reviewer\
       \ to validate status at staging time"
     external_services:
-    - github.com  # cloned during provisioning via bootstrap/showroom role (Modules 5-6)
-    gpu_nodes: 0
-    gpu_type: ''
-  duration_hours: 2
+    - github.com  # student-runtime (Module 5-6 repo clone) and provisioning (bootstrap/showroom role)
+    gpu_nodes: 1
+    gpu_type: g6.2xlarge
+  duration_hours: 4
   audience: intermediate
 development:
   automation:
@@ -103,63 +124,68 @@ approval_checklist:
   content:
     prerequisites_verifiable: false
     assessment_strategy: 'Trust-based — no automated validation. Students confirm
-      completion by observing expected results (traces visible in MLflow, data shown
-      in Grafana dashboards, LogQL queries returning results). No automated solve/validate
-      buttons or scoring.'
-    design_overview: "This intermediate-level hands-on lab uses the Fed Aura Capital\
-      \ mortgage lending application \u2014 a five-agent LangGraph system that debuted\
-      \ at Red Hat Summit 2026 \u2014 to teach AgentOps observability using Red Hat\
-      \ OpenShift AI. Participants monitor AI-specific metrics with Grafana, analyze\
-      \ structured logs with LokiStack, and trace end-to-end agent execution with\
-      \ MLflow; optional modules add automated LLM evaluation pipelines via RHOAI\
-      \ Data Science Pipelines. It replaces the Parasol Insurance AI workshop as the\
-      \ primary customer-facing vehicle for RHOAI 3.x adoption."
+      completion by observing expected results (model endpoints responding in GenAI
+      Playground, AutoML results populating in RHOAI, MLflow traces appearing, guardrail
+      blocks triggering). No automated solve/validate buttons or scoring.'
+    design_overview: "This intermediate hands-on workshop places participants inside\
+      \ Fed Aura Capital’s pre-deployed production AI platform on Red Hat OpenShift\
+      \ AI, covering the full RHOAI portfolio across nine modules: model deployment\
+      \ and GPU inference, MaaS governance, prompt engineering, AutoML, RAG, OGX agentic\
+      \ routing, MCP tooling, MLflow tracing and evaluation, and AI safety with NeMo\
+      \ Guardrails and OpenShell sandboxing. Each capability is introduced through\
+      \ the lens of a real mortgage lending use case (the Lenora assistant at Fed Aura\
+      \ Capital), making the platform decisions concrete and business-motivated."
     module_summaries:
-    - title: The Agentic App and Why Observability Matters
-      overview: "Students explore the pre-deployed Fed Aura Capital multi-agent mortgage\
-        \ application, run CLI health checks, interact with the CEO agent persona\
-        \ to generate conversation data, and experience the observability gap firsthand\
-        \ \u2014 the application is healthy by platform metrics but its internal reasoning\
-        \ and tool calls are invisible."
-    - title: Observability Pillars, Concepts, and Personas
-      overview: A conceptual module that maps the three observability pillars (metrics,
-        logs, traces) to specific operational questions in the mortgage AI system
-        and distinguishes the different observability needs of SRE vs. AI Developer
-        personas.
-    - title: Metrics and Logs for Agentic Applications
-      overview: Students navigate a pre-deployed Grafana dashboard displaying AI-specific
-        metrics (LLM token usage, inference latency, tool-call success rates) and
-        then use LokiStack with LogQL to scope and filter structured JSON logs from
-        the multi-agent service.
-    - title: Tracing and MLflow
-      overview: "Students access the RHOAI MLflow tracking server and trace the CEO\
-        \ agent conversations from Module 1 end-to-end \u2014 drilling into input/output\
-        \ shield spans, LLM calls with full prompt/completion text, tool authorization\
-        \ decisions, and multi-turn session grouping."
-    - title: Agent and LLM Evaluations (Optional)
-      overview: An optional advanced module where students launch a RHOAI Jupyter
-        workbench, run an evaluation notebook, register the prospect agent's prompt
-        in the MLflow Prompt Registry, build a six-case evaluation dataset, and execute
-        both deterministic and LLM-as-a-Judge scorers.
-    - title: From Development to Production (Optional)
-      overview: An optional advanced module that automates the Module 5 evaluation
-        into a Kubeflow-based RHOAI Data Science Pipeline, then detects a prompt regression
-        (mandatory-to-optional tool-use change) before production, demonstrating the
-        quality gate pattern for AI prompt management.
+    - title: Model Catalog and Deployment
+      overview: Participants deploy the same LLM twice from the RHOAI Model Catalog
+        — once on CPU and once with GPU acceleration via llm-d — then benchmark quantized
+        vs. unquantized variants using TTFT metrics to understand inference trade-offs.
+    - title: Models as a Service
+      overview: Participants publish a deployed model as a governed MaaS endpoint
+        with subscription tier rate limits, generate API keys, and consume the endpoint
+        from a developer tool (OpenCode/VS Code).
+    - title: GenAI Playground
+      overview: Participants create a multi-model Playground session comparing responses
+        across CPU-hosted and external models, then design and version a domain-specific
+        system prompt for the Lenora assistant using the MLflow Prompt Registry.
+    - title: Predictive AI with AutoML
+      overview: Participants configure and launch an AutoML binary classification
+        job against a mortgage loan dataset, analyze the model leaderboard, and interpret
+        which features drive automated loan approval predictions.
+    - title: RAG and AutoRAG
+      overview: Participants observe RAG-grounded responses in the running Fed Aura
+        app, then enable RAG in the Playground, upload a private policy document,
+        and validate that retrieved responses are grounded in the document.
+    - title: 'OGX: Unified Agentic API Surface'
+      overview: Participants deploy OGX on RHOAI, redirect existing LangGraph agents
+        through it with a single base_url change, and configure provider routing and
+        failover between self-hosted and remote model endpoints.
+    - title: MCP Ecosystem
+      overview: Participants inspect MCPServerRegistration CRDs, verify the MCP gateway
+        route in the gateway-system project, and invoke mortgage domain tools (affordability_calc,
+        risk_assessment, pricing_engine) through GenAI Playground.
+    - title: Evaluations and Tracing with MLflow
+      overview: Participants trace agent decision paths end-to-end in MLflow including
+        the AutoML model invocation, run an automated evaluation pipeline, and use
+        EvalHub to compare system prompt versions by quality score.
+    - title: AI Safety and Secure Agent Onboarding
+      overview: Participants trigger input and output guardrail blocks, review Garak
+        adversarial test results, deploy an agent into an OpenShell Agent Sandbox with
+        deny-by-default policies, and examine OCSF-formatted audit logs.
     rcars_overlap_pct: 100
     rcars_top_matches:
-    - title: "AgentOps in Production \u2014 AI Observability on OpenShift"
+    - title: "AgentOps in Production — AI Observability on OpenShift"
       ci_name: published.agentops-ocp.prod
       url: https://catalog.demo.redhat.com/catalog?item=published.agentops-ocp.prod
       relevance_score: 100
-      why_it_fits: "Direct content match \u2014 same multi-agent mortgage application,\
+      why_it_fits: "Direct content match — same multi-agent mortgage application,\
         \ same observability stack (Prometheus, LokiStack, Grafana, MLflow, Kubeflow\
         \ Pipelines), same audience. 1,541 provisions/quarter."
     - title: 'LB2144: AI AgentOps OpenShift (AWS)'
       ci_name: summit-2026.lb2144-agentops-ocp-aws.prod
       url: https://catalog.demo.redhat.com/catalog?item=summit-2026.lb2144-agentops-ocp-aws.prod
       relevance_score: 100
-      why_it_fits: "Summit 2026 AWS variant of the same content \u2014 all modules,\
+      why_it_fits: "Summit 2026 AWS variant of the same content — all modules,\
         \ same audience; event-scoped and AWS-backed rather than CNV."
       workloads:
       - role: ocp4_workload_authentication
@@ -179,14 +205,13 @@ approval_checklist:
       url: https://catalog.demo.redhat.com/catalog?item=published.agentic-ai-openshift.prod
       relevance_score: 44
       why_it_fits: Partial overlap on LangGraph and multi-agent AI on RHOAI; diverges
-        on observability stack (uses Langfuse, not MLflow/LokiStack/Grafana) and lacks
-        Data Science Pipelines coverage.
-    catalog_gap: "The two 100% matches are existing catalog items derived from the\
-      \ same imported source content (agentops-in-prod-showroom). The Fed Aura Capital\
-      \ Workshop migration establishes the CNV-native, RHOAI 3.x successor on a durable\
-      \ catalog path; differentiation grows as end-to-end RHOAI modules beyond AgentOps\
-      \ are added in future development \u2014 coverage that does not exist anywhere\
-      \ in the catalog today."
+        on scope (single-framework, no MaaS governance, no AutoML, no AI safety, no
+        OGX) and lacks the full portfolio breadth of this workshop.
+    catalog_gap: "The two 100% matches are existing items derived from the earlier\
+      \ six-module observability-focused version of this content. The nine-module Fed\
+      \ Aura Capital AI Workshop covers the complete RHOAI portfolio — model catalog,\
+      \ MaaS governance, AutoML, RAG, OGX, MCP, and AI safety — in a single\
+      \ cohesive lab experience. No existing catalog item covers this breadth."
     rejections:
     - id: 10cf228b-8107-4b7a-85fc-7a70852f42a7
       text: Not enough information provided in the intake form. Please run intake
@@ -198,6 +223,6 @@ approval_checklist:
     peak_environments: null
     cost_per_run_est: ''
     provisioning_time_est: ''
-    agnosticv_base_ci: lb2144-agentops-ocp-cnv
+    agnosticv_base_ci: agd_v2/private-llmaas-aws-v3
     approved_by: ''
     rejections: []
