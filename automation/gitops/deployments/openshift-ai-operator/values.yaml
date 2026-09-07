@@ -1,9 +1,0 @@
-operators:
-  rhods-operator:
-    channel: stable-3.4
-    namespace: redhat-ods-operator
-    installPlanApproval: Automatic
-    source: redhat-operators
-    sourceNamespace: openshift-marketplace
-    operatorGroup:
-      enabled: true
