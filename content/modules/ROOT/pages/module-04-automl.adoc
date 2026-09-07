@@ -1,0 +1,20 @@
+= Module 4: Predictive AI with AutoML
+:navtitle: Predictive AI with AutoML
+
+// TODO: content
+
+== Overview
+
+// Introduce AutoML binary classification and the loan underwriting use case.
+
+== Configure an AutoML job
+
+// TODO
+
+== Analyze the model leaderboard
+
+// TODO
+
+== Interpret feature importance
+
+// TODO

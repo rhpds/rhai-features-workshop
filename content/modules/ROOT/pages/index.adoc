@@ -1,41 +1,27 @@
-= AgentOps Observability with Red Hat AI
+= Red Hat OpenShift AI 3 Features Workshop
+:navtitle: Welcome
 
-Welcome to the AgentOps Observability with Red Hat AI workshop!
+Welcome to the *Red Hat OpenShift AI 3 Features Workshop*.
 
-== What you'll learn
+In this workshop you take the role of an engineer at *Fed Aura Capital*, a mortgage lending firm running a production AI platform on Red Hat OpenShift AI. The platform is already deployed — your job is to explore, configure, and extend each layer of it across nine hands-on modules.
 
-In this workshop, you will:
+== What you will do
 
-* Monitor the Stack: Utilize Red Hat AI's out-of-the-box observability stack to track key metrics and logs of your Agentic App
-* Trace Multi-Agent Executions: Track requests across multi-agent frameworks and MCP tools to understand the complete decision-making path
-* LLM Evaluations: Combine tracing with LLM evaluations (Evals) in MLflow to ensure your agents maintain high-quality outputs
-* From Development to Production: Move from manual notebook evaluations to automated AI pipelines that run continuously on the platform
+* Deploy and benchmark LLM inference with GPU acceleration
+* Publish governed model endpoints and manage API access
+* Design and version prompts in the GenAI Playground
+* Build a predictive AutoML model for loan underwriting
+* Enable RAG-grounded responses with a private policy document
+* Route and fail over agentic traffic with OGX
+* Invoke mortgage domain tools through the MCP gateway
+* Trace and evaluate agent quality with MLflow
+* Enforce AI safety with NeMo Guardrails and OpenShell sandboxing
 
-== Who this is for
+== How to use this guide
 
-This workshop is designed for SREs, Platform Engineers, and AI Developers/Engineers who want to implement end-to-end observability for multi-agent AI systems.
+Work through each module in order. All infrastructure is pre-provisioned — no local setup is required. Use the browser tabs provided in your Showroom environment.
 
-== Prerequisites
-
-This workshop assumes basic familiarity with Kubernetes and AI/ML concepts.
-
-== Workshop environment
-
-You will work with a multi-agent mortgage lending application built with LangGraph and integrated with Model Context Protocol (MCP) tools.
-
-Log into OpenShift with the following credentials:
+Log in to OpenShift with:
 
 * Username: [.notranslate]#{user}#
 * Password: [.notranslate]#{password}#
-
-NOTE: All environment details and credentials are available in the lab interface.
-
-== Estimated time
-
-This workshop will take approximately **1 hour 30 minutes** to complete.
-
-You can work at your own pace.
-
-== Let's get started!
-
-Click on **Workshop Overview** in the navigation to begin your learning journey.

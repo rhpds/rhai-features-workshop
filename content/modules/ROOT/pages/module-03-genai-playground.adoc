@@ -1,0 +1,20 @@
+= Module 3: GenAI Playground
+:navtitle: GenAI Playground
+
+// TODO: content
+
+== Overview
+
+// Introduce the GenAI Playground and MLflow Prompt Registry.
+
+== Create a multi-model Playground session
+
+// TODO
+
+== Design a domain-specific system prompt
+
+// TODO
+
+== Version and save the prompt to MLflow Prompt Registry
+
+// TODO

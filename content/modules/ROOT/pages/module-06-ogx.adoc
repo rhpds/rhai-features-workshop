@@ -1,0 +1,20 @@
+= Module 6: OGX — Unified Agentic API Surface
+:navtitle: OGX
+
+// TODO: content
+
+== Overview
+
+// Introduce OGX as the unified agentic API surface for provider routing and failover.
+
+== Deploy OGX on RHOAI
+
+// TODO
+
+== Redirect agents through OGX
+
+// TODO
+
+== Configure provider routing and failover
+
+// TODO

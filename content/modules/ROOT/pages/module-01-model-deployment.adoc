@@ -1,0 +1,20 @@
+= Module 1: Model Catalog and Deployment
+:navtitle: Model Catalog and Deployment
+
+// TODO: content
+
+== Overview
+
+// Introduce the RHOAI Model Catalog and the llm-d distributed inference runtime.
+
+== Deploy a model on CPU
+
+// TODO
+
+== Deploy a model with GPU acceleration (llm-d)
+
+// TODO
+
+== Benchmark: quantized vs. unquantized (TTFT)
+
+// TODO

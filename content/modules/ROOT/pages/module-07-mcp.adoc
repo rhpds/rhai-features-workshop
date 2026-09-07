@@ -1,0 +1,20 @@
+= Module 7: MCP Ecosystem
+:navtitle: MCP Ecosystem
+
+// TODO: content
+
+== Overview
+
+// Introduce MCPServerRegistration CRDs and the MCP gateway.
+
+== Inspect MCPServerRegistration resources
+
+// TODO
+
+== Verify the MCP gateway route
+
+// TODO
+
+== Invoke mortgage domain tools through GenAI Playground
+
+// TODO

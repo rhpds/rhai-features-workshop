@@ -1,0 +1,24 @@
+= Module 9: AI Safety and Secure Agent Onboarding
+:navtitle: AI Safety
+
+// TODO: content
+
+== Overview
+
+// Introduce NeMo Guardrails, Garak, OpenShell Agent Sandboxes, SPIFFE/SPIRE, and OCSF.
+
+== Test input and output guardrails
+
+// TODO
+
+== Review Garak adversarial test results
+
+// TODO
+
+== Deploy an agent into an OpenShell Agent Sandbox
+
+// TODO
+
+== Examine SPIFFE/SPIRE identity and OCSF audit logs
+
+// TODO

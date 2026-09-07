@@ -1,0 +1,24 @@
+= Module 8: Evaluations and Tracing with MLflow
+:navtitle: Evaluations and Tracing
+
+// TODO: content
+
+== Overview
+
+// Introduce MLflow autologging, evaluation pipelines, and EvalHub.
+
+== Explore MLflow Experiments and traces
+
+// TODO
+
+== Deep-dive into an agent trace
+
+// TODO
+
+== Run an automated evaluation pipeline
+
+// TODO
+
+== Compare prompt versions in EvalHub
+
+// TODO

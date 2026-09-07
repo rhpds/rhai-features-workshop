@@ -1,0 +1,20 @@
+= Module 5: RAG and AutoRAG
+:navtitle: RAG and AutoRAG
+
+// TODO: content
+
+== Overview
+
+// Introduce RAG with pgvector and the AutoRAG pipeline.
+
+== Observe RAG-grounded responses in the Fed Aura app
+
+// TODO
+
+== Enable RAG in the Playground
+
+// TODO
+
+== Upload a private policy document and validate grounded responses
+
+// TODO
