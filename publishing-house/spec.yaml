@@ -91,7 +91,7 @@ spec:
     aap_version: ''
     ai_requirement: maas
     ai_model_tier: open-source
-    ai_model_name: gpt-oss-120b
+    ai_model_name: ''
     ai_justification: ''
     non_ga_products:
     - Red Hat OpenShift AI 3.5

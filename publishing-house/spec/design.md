@@ -81,7 +81,7 @@ Lab (hands-on)
 
 **Application Stack (pre-deployed):**
 - FastAPI (mortgage-ai API service), React (Fed Aura Capital UI)
-- NVIDIA Nemotron models; gpt-oss-120b via MaaS
+- NVIDIA Nemotron models (via RHOAI Model Catalog)
 
 ## Module Map
 
@@ -143,7 +143,7 @@ Participants do not provision infrastructure. All platform components (RHOAI ope
   - Bastion: 1 × t3a.small (RHEL96GOLD-latest)
   - GPU node: 1 × g6.2xlarge (NVIDIA L4, 500 GB root volume) — tainted `nvidia.com/gpu=l4-gpu:NoSchedule`. **The machineset is provisioned with `total_replicas: 0` by default and scaled to 1 manually before the workshop starts. This avoids GPU cost during idle/staging periods; the facilitator scales up the machineset from the OCP console prior to the session.**
 - **Automation approach:** Ansible + GitOps (Helm + ArgoCD); agnosticd workloads drive cluster-wide service provisioning
-- **AI/MaaS:** MaaS, open-source model (`gpt-oss-120b` via in-cluster MaaS gateway; NVIDIA Nemotron models via RHOAI Model Catalog)
+- **AI/MaaS:** MaaS, open-source model tier; specific model TBD at staging (NVIDIA Nemotron models via RHOAI Model Catalog)
 - **External services:** `github.com` — required both during provisioning (bootstrap/showroom role) and at student runtime (repo clone in Modules 5–6)
 - **Non-GA products:** Red Hat OpenShift AI 3.5 — not GA at intake time; expected to GA before catalog release. Pre-GA access via RHDP internal provisioning. Infra reviewer to validate GA status at staging time.
 - **Reporting:** `primaryBU: Artificial_Intelligence`
