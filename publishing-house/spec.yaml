@@ -77,13 +77,13 @@ spec:
     platform: ocp
     topology: shared-cluster
     cloud_provider: aws
-    max_concurrent_users: 15
+    max_concurrent_users: 30
     ocp_version: '4.22'
     cluster_type: multinode
     control_plane_instance_count: 3
     control_plane_cpu: 16       # c6a.4xlarge
     control_plane_ram_gb: 32    # c6a.4xlarge
-    worker_count: 9             # dynamic: max(ceil(num_users * 0.3) + 4, 5); value shown for 15 users
+    worker_count: 13            # dynamic: max(ceil(num_users * 0.3) + 4, 5); value shown for 30 users
     worker_cpu: 16              # m6a.4xlarge
     worker_ram_gb: 64           # m6a.4xlarge
     worker_disk_gb: 500
