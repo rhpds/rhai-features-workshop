@@ -172,23 +172,42 @@ approval_checklist:
       overview: Participants trigger input and output guardrail blocks, review Garak
         adversarial test results, deploy an agent into an OpenShell Agent Sandbox with
         deny-by-default policies, and examine OCSF-formatted audit logs.
-    rcars_overlap_pct: 100
+    rcars_overlap_pct: 92
     rcars_top_matches:
     - title: "AgentOps in Production — AI Observability on OpenShift"
       ci_name: published.agentops-ocp.prod
       url: https://catalog.demo.redhat.com/catalog?item=published.agentops-ocp.prod
-      relevance_score: 100
-      why_it_fits: "Direct content match — same multi-agent mortgage application,\
-        \ same observability stack (Prometheus, LokiStack, Grafana, MLflow, Kubeflow\
-        \ Pipelines), same audience. 1,541 provisions/quarter."
+      relevance_score: 92
+      why_it_fits: "Covers MLflow tracing, automated evaluations, prompt versioning,\
+        \ RAG with pgvector, and MCP tool invocation in a mortgage lending context\
+        \ — strong match on the observability and evaluation pillars. 2,232 provisions/quarter."
+      workloads:
+      - role: ocp4_workload_authentication
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_cert_manager
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_external_odf
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_gitops_bootstrap
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_litellm_virtual_keys
+        collection: rhpds.litellm_virtual_keys
+      - role: ocp4_workload_ocp_console_embed
+        collection: agnosticd.showroom
+      - role: ocp4_workload_openshift_gitops
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_showroom
+        collection: agnosticd.showroom
     - title: 'LB2144: AI AgentOps OpenShift (AWS)'
       ci_name: summit-2026.lb2144-agentops-ocp-aws.prod
       url: https://catalog.demo.redhat.com/catalog?item=summit-2026.lb2144-agentops-ocp-aws.prod
-      relevance_score: 100
-      why_it_fits: "Summit 2026 AWS variant of the same content — all modules,\
-        \ same audience; event-scoped and AWS-backed rather than CNV."
+      relevance_score: 87
+      why_it_fits: "AWS-backed Summit 2026 variant of the observability content —\
+        \ same MLflow tracing, MCP, RAG, and evaluation scope; event-scoped only."
       workloads:
       - role: ocp4_workload_authentication
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_cert_manager
         collection: agnosticd.core_workloads
       - role: ocp4_workload_gitops_bootstrap
         collection: agnosticd.core_workloads
@@ -203,15 +222,31 @@ approval_checklist:
     - title: Agentic AI with Llama Stack and 3rd party Frameworks
       ci_name: published.agentic-ai-openshift.prod
       url: https://catalog.demo.redhat.com/catalog?item=published.agentic-ai-openshift.prod
-      relevance_score: 44
-      why_it_fits: Partial overlap on LangGraph and multi-agent AI on RHOAI; diverges
-        on scope (single-framework, no MaaS governance, no AutoML, no AI safety, no
-        OGX) and lacks the full portfolio breadth of this workshop.
-    catalog_gap: "The two 100% matches are existing items derived from the earlier\
-      \ six-module observability-focused version of this content. The nine-module Fed\
-      \ Aura Capital AI Workshop covers the complete RHOAI portfolio — model catalog,\
-      \ MaaS governance, AutoML, RAG, OGX, MCP, and AI safety — in a single\
-      \ cohesive lab experience. No existing catalog item covers this breadth."
+      relevance_score: 83
+      why_it_fits: "Covers MCP ecosystem, RAG, safety guardrails, and agentic API\
+        \ surfaces — but built around Llama Stack rather than native RHOAI components;\
+        \ no model catalog, llm-d, AutoML, OGX, or MaaS governance."
+      workloads:
+      - role: ocp4_workload_authentication_htpasswd
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_cert_manager
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_gitea_operator
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_gitops_bootstrap
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_litellm_virtual_keys
+        collection: rhpds.litellm_virtual_keys
+      - role: ocp4_workload_openshift_gitops
+        collection: agnosticd.core_workloads
+      - role: ocp4_workload_showroom
+        collection: agnosticd.showroom
+    catalog_gap: "The top catalog matches cover individual slices of the RHOAI portfolio\
+      \ (observability, MCP, RAG, MaaS) but no single lab covers the full production\
+      \ AI platform stack in one experience. This workshop is the only catalog item\
+      \ that combines model catalog deployment with GPU inference (llm-d), MaaS governance,\
+      \ AutoML, RAG, OGX unified agentic API, MCP tooling, MLflow evaluation, and\
+      \ AI safety (NeMo Guardrails + OpenShell sandboxing) in a single cohesive scenario."
     rejections:
     - id: 10cf228b-8107-4b7a-85fc-7a70852f42a7
       text: Not enough information provided in the intake form. Please run intake
