@@ -1,4 +1,4 @@
-# Fed Aura Capital AI Workshop with Red Hat OpenShift AI
+# Red Hat OpenShift AI 3 Features Workshop
 
 Welcome to the project spec. Use the navigation to browse the design and module outlines.
 

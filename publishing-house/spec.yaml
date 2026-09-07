@@ -15,7 +15,7 @@ project:
   jira_ticket: RHDPCD-1187
   workflow_id: d5fb7218-8b36-4d55-b2e8-080e7bde1d9a
 spec:
-  title: Fed Aura Capital AI Workshop with Red Hat OpenShift AI
+  title: Red Hat OpenShift AI 3 Features Workshop
   learning_objectives:
   - Deploy an LLM from the RHOAI Model Catalog on CPU and with GPU acceleration using
     llm-d, and benchmark quantized vs. unquantized inference performance using TTFT

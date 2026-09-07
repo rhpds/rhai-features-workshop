@@ -1,4 +1,4 @@
-# Fed Aura Capital AI Workshop with Red Hat OpenShift AI
+# Red Hat OpenShift AI 3 Features Workshop
 
 ## Overview
 
@@ -135,13 +135,13 @@ Participants do not provision infrastructure. All platform components (RHOAI ope
 - **Cloud provider:** AWS
 - **Cluster type:** Multinode
 - **OCP version:** 4.22 (minimum)
-- **Topology:** Shared cluster — up to 15 concurrent users; multi-user (not per-user namespaced). Participants share cluster-level services (RHOAI, MLflow, Grafana, MCP gateway).
+- **Topology:** Shared cluster — up to 30 concurrent users; multi-user (not per-user namespaced). Participants share cluster-level services (RHOAI, MLflow, Grafana, MCP gateway).
 - **Base CI:** `agd_v2/private-llmaas-aws-v3`
 - **Sizing:**
   - Control plane: 3 × c6a.4xlarge (16 vCPU / 32 GB RAM)
-  - Workers: m6a.4xlarge — count is dynamic: `max(ceil(num_users × 0.3) + 4, 5)`; for 15 users = 9 workers (16 vCPU / 64 GB RAM each)
+  - Workers: m6a.4xlarge — count is dynamic: `max(ceil(num_users × 0.3) + 4, 5)`; for 30 users = 13 workers (16 vCPU / 64 GB RAM each)
   - Bastion: 1 × t3a.small (RHEL96GOLD-latest)
-  - GPU node: 1 × g6.2xlarge (NVIDIA L4, 500 GB root volume) — tainted `nvidia.com/gpu=l4-gpu:NoSchedule`
+  - GPU node: 1 × g6.2xlarge (NVIDIA L4, 500 GB root volume) — tainted `nvidia.com/gpu=l4-gpu:NoSchedule`. **The machineset is provisioned with `total_replicas: 0` by default and scaled to 1 manually before the workshop starts. This avoids GPU cost during idle/staging periods; the facilitator scales up the machineset from the OCP console prior to the session.**
 - **Automation approach:** Ansible + GitOps (Helm + ArgoCD); agnosticd workloads drive cluster-wide service provisioning
 - **AI/MaaS:** MaaS, open-source model (`gpt-oss-120b` via in-cluster MaaS gateway; NVIDIA Nemotron models via RHOAI Model Catalog)
 - **External services:** `github.com` — required both during provisioning (bootstrap/showroom role) and at student runtime (repo clone in Modules 5–6)
