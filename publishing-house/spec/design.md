@@ -104,6 +104,10 @@ Estimated total: 2–4 hours depending on participant pace and depth of explorat
 
 Intermediate
 
+## Assessment Strategy
+
+Trust-based — no automated validation. Participants confirm completion by observing expected results: model endpoints responding in GenAI Playground, AutoML results populating in RHOAI, MLflow traces appearing, guardrail blocks triggering. There are no solve/validate buttons, scoring, or automated pass/fail checks. Prerequisites are self-assessed and cannot be validated by lab automation.
+
 ## Environment
 
 **Learner view:** When the lab starts, participants are logged into an OpenShift cluster with the full Fed Aura Capital AI platform already running. Six browser tabs are pre-configured:
