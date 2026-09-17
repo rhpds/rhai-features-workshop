@@ -29,5 +29,13 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
+      # RHOAI CRDs may not exist yet when this first syncs.
+      - SkipDryRunOnMissingResource=true
       - RespectIgnoreDifferences=true
+    retry:
+      limit: 20
+      backoff:
+        duration: 20s
+        maxDuration: 5m
+        factor: 2
 {{- end }}

@@ -23,6 +23,14 @@ spec:
       prune: false
       selfHeal: true
     syncOptions:
+      # RHOAI CRDs may not exist yet when this first syncs.
+      - SkipDryRunOnMissingResource=true
       # OdhDashboardConfig is created by the RHOAI operator -- adopt, do not fight it.
       - ServerSideApply=true
+    retry:
+      limit: 20
+      backoff:
+        duration: 20s
+        maxDuration: 5m
+        factor: 2
 {{- end }}
