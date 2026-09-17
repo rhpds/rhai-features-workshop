@@ -6,9 +6,9 @@ serverName: lsd-genai-playground
 # Remote LLM / MaaS provider, injected from agnosticv (bootstrap-infra remotellm.*).
 remotellm:
   enabled: true
-  url: "https://maas-rhdp.apps.maas.redhatworkshops.io/v1"
-  id: "gpt-oss-120b"
-  apiToken: "REPLACE_ME"
+  url: ""
+  id: ""
+  apiToken: ""
 
 # Optional in-cluster TinyLlama served by the admin/llmd chart.
 tinyllama:
