@@ -1,0 +1,19 @@
+# Injected from bootstrap-infra (remotellm.*). The model is decided at staging
+# time, so nothing is baked in here.
+model:
+  name: ""
+  # Hostname only, no scheme and no path.
+  endpoint: ""
+  apiKey: ""
+  apiFormat: openai-chat
+  path: /v1/chat/completions
+namespaces:
+  externalModels: external-models
+  aiTenants: ai-tenants
+  tenant: models-as-a-service
+gateway:
+  name: maas-default-gateway
+subscription:
+  tokenLimit: 10000
+  window: 1h
+  priority: 10

@@ -1,15 +1,17 @@
+{{- if .Values.admin.enabled }}
+---
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: openshift-gitops
+  name: {{ .Values.bootstrap.argoNamespace }}
   annotations:
     openshift.io/cluster-monitoring: 'true'
 ---
 apiVersion: argoproj.io/v1beta1
 kind: ArgoCD
 metadata:
-  name: openshift-gitops
-  namespace: openshift-gitops
+  name: {{ .Values.bootstrap.argoNamespace }}
+  namespace: {{ .Values.bootstrap.argoNamespace }}
 spec:
   resourceTrackingMethod: annotation
   applicationSet:
@@ -20,3 +22,12 @@ spec:
       requests:
         cpu: "125m"
         memory: "128Mi"
+  controller:
+    resources:
+      limits:
+        cpu: "2"
+        memory: "2Gi"
+      requests:
+        cpu: "250m"
+        memory: "1Gi"
+{{- end }}
