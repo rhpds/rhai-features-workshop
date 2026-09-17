@@ -1,12 +1,12 @@
-{{- if .Values.components.mlflow.enabled }}
+{{- if .Values.components.dashboardConfig.enabled }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: admin-mlflow
+  name: admin-dashboard-config
   namespace: {{ .Values.bootstrap.argoNamespace }}
   annotations:
-    argocd.argoproj.io/sync-wave: "0"
+    argocd.argoproj.io/sync-wave: "-1"
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -17,9 +17,12 @@ spec:
   source:
     repoURL: {{ .Values.bootstrap.repoURL }}
     targetRevision: {{ .Values.bootstrap.targetRevision }}
-    path: {{ include "bootstrap.path" (dict "ctx" . "chart" "admin/mlflow") }}
+    path: {{ include "bootstrap.path" (dict "ctx" . "chart" "admin/dashboard-config") }}
   syncPolicy:
     automated:
-      prune: true
+      prune: false
       selfHeal: true
+    syncOptions:
+      # OdhDashboardConfig is created by the RHOAI operator -- adopt, do not fight it.
+      - ServerSideApply=true
 {{- end }}
