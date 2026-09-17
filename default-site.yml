@@ -1,7 +1,7 @@
 ---
 site:
-  title: "AgentOps Observability with Red Hat AI"
-  url: https://rhpds.github.io/agentops-in-prod-showroom
+  title: "Fed Aura Capital AI Workshop with Red Hat AI"
+  url: https://rhpds.github.io/rhai-features-workshop
   start_page: modules::index.adoc
 
 content:
@@ -11,13 +11,17 @@ content:
 
 ui:
   bundle:
-    url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/latest/ui-bundle.zip
+    url: https://github.com/rhpds/rhdp_showroom_theme/releases/download/v2.0.3/ui-bundle.zip
     snapshot: true
-  supplemental_files:
-    - path: ./content/supplemental-ui
+  supplemental_files: ./content/supplemental-ui
 
 runtime:
   fetch: true
+
+antora:
+  extensions:
+    - require: '@antora/lunr-extension'
+      index_latest_only: true
 
 output:
   dir: ./www
