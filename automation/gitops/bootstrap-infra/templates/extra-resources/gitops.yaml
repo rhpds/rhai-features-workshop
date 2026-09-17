@@ -12,22 +12,32 @@ kind: ArgoCD
 metadata:
   name: {{ .Values.bootstrap.argoNamespace }}
   namespace: {{ .Values.bootstrap.argoNamespace }}
+# WARNING: this manifest and the agnosticd ocp4_workload_openshift_gitops workload
+# both own this ArgoCD CR, so the values below must not be lower than what the
+# workload sets. They previously were (controller: 2 CPU / 2Gi against the
+# workload's 4 CPU / 8Gi), and because this chart is applied *after* provisioning
+# it silently downgraded the controller, which then OOMKilled (exit 137) while
+# syncing this very app-of-apps.
+#
+# Fields cannot simply be dropped either: ArgoCD prunes fields it previously
+# managed, so the operator would reapply its own 2Gi default. Keep them, and keep
+# them in sync with agd_v2/rhai-features-workshop/common.yaml.
 spec:
   resourceTrackingMethod: annotation
   applicationSet:
     resources:
       limits:
-        cpu: "500m"
-        memory: "256Mi"
+        cpu: "1"
+        memory: "1Gi"
       requests:
-        cpu: "125m"
-        memory: "128Mi"
+        cpu: "250m"
+        memory: "512Mi"
   controller:
     resources:
       limits:
-        cpu: "2"
-        memory: "2Gi"
+        cpu: "4"
+        memory: "8Gi"
       requests:
-        cpu: "250m"
-        memory: "1Gi"
+        cpu: "2"
+        memory: "4Gi"
 {{- end }}
