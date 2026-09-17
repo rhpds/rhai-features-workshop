@@ -1,0 +1,131 @@
+= Conclusion
+:imagesdir: ../assets/images
+:navtitle: Conclusion
+:toc: macro
+:toclevels: 1
+
+Congratulations! You have worked through every layer of {company_name}'s production AI platform on Red Hat AI - from the model that generates the text to the sandbox that contains the agent.
+
+== What you accomplished
+
+You explored the four transformation pillars the CTO described in section 1.2, taking {company_name} from a prototype chatbot to a production-grade, observable, and secure AI system.
+
+=== Pillar 1 - Inference: "From token consumer to token producer"
+
+* Explored the Model Catalog and read a model card's license, tags, and performance benchmarks (2.1)
+* Deployed Qwen3 0.6B on CPU with vLLM and tested it in the GenAI Playground (2.2)
+* Redeployed the same model with llm-d distributed inference across two replicas (2.3)
+* Consumed a shared GPU-hosted model through the MaaS gateway with a scoped API key and a rate-limited subscription tier, from both curl and the Playground, then reviewed per-key usage data (2.4)
+
+=== Pillar 2 - Data: "From generic to useful AI"
+
+* Shaped model behavior with system prompts in the GenAI Playground, and saved versions to the Prompt Registry (3.1)
+* Discovered where prompt-based context injection breaks down - context window limits, maintenance burden, staleness (3.1)
+* Enabled RAG, uploaded {company_name}'s product catalog, and verified answers were grounded in the document rather than training data (3.2)
+* Loaded the read-only global system prompt and combined it with RAG to reproduce {assistant_name}'s production behavior (3.2)
+* Learned how Docling converts charts, tables, and infographics into retrievable text, and how OGX and pgvector provide retrieval under the hood (3.2, 3.3)
+
+=== Pillar 3 - Agentic: "From useful to productive AI"
+
+* Watched {assistant_name} run a tool-backed risk assessment as the Loan Officer persona (4.1)
+* Traced a multi-step agent decision end-to-end in MLflow, from `input_shield` through `tool_auth` to each individual tool call (4.1)
+* Explored the MCP catalog and connected the Playground to the Risk MCP server (4.2)
+* Compared the same prompt with and without MCP tool access - the difference between an estimate and a calculation (4.2)
+* Ran a capability benchmark in EvalHub, and evaluated RAG quality and open-ended agent responses with RAGAS and llm-as-judge (4.3)
+
+=== Pillar 4 - Safety: "From prototype to production-grade"
+
+* Observed persona-based access control changing what {assistant_name} reveals for the same question (5.1)
+* Tested NeMo Guardrails against prompt injection, fraudulent requests, and competitor mentions, and read the rail configuration that blocked them (5.2)
+* Reviewed Garak adversarial test results and interpreted the pass/fail evidence (5.2)
+* Connected to an OpenShell Agent Sandbox, attempted data exfiltration, then applied a deny-by-default policy that blocked it (5.3)
+
+[TIP]
+====
+Two sections were optional and may still be waiting for you: the *AutoRAG optimization pipeline* (3.3), which tests multiple RAG configurations and ranks them on a leaderboard, and *Predictive AI with AutoML* (4.4), which trains the scikit-learn model behind the Risk MCP's `uw_predict_loan_approval` tool and registers it in MLflow.
+====
+
+== {company_name}: before and after
+
+[cols="1,1,1",options="header"]
+|===
+| Dimension | Before | After
+
+| Model hosting
+| External vendor, per-token billing
+| Self-hosted with vLLM on Red Hat AI, fixed infrastructure cost
+
+| Data residency
+| Every request leaves the network
+| Inference stays in-cluster, full data sovereignty
+
+| Model access
+| Each team deploys its own copy
+| Single deployment shared through the MaaS gateway with subscription tiers and per-key usage metering
+
+| Knowledge currency
+| Stale training data, hallucinated policy answers
+| RAG-grounded in current internal documents, updated by uploading a file
+
+| Assistant behavior
+| Generic answers with disclaimers
+| Domain persona defined by a versioned global prompt, facts retrieved from company documents
+
+| Agent capabilities
+| Hedged estimates: "verify with your underwriting guidelines"
+| Tool-calculated results with a clear assessment against {company_name}'s own thresholds
+
+| Decision visibility
+| Black box - no record of what the agent did
+| Full MLflow traces: every tool call, LLM invocation, and decision path, with per-step latency
+
+| Quality assurance
+| Manual spot-checking
+| Capability benchmarks, RAGAS scoring, and llm-as-judge evaluation, runnable as a pipeline
+
+| Security posture
+| Standard containers, no sandboxing, CISO blocks deployment
+| Defense-in-depth: persona access control, guardrails at the inference boundary, adversarial test evidence, and sandboxed agents
+
+| Regulatory compliance
+| "We'll get back to you"
+| Structured, timestamped traces plus OCSF audit events, SIEM-ready
+|===
+
+== Key takeaways
+
+1. *The platform is the product.* Individual AI capabilities are useful alone, but their value multiplies when integrated on one platform with shared observability and governance. A model endpoint is not an AI strategy.
+
+2. *It is not just the LLM.* Every answer {assistant_name} gives depends on retrieval, tool execution, identity, and policy enforcement working together. The model is one component in a pipeline.
+
+3. *Contrast drives understanding.* You asked the same question with no prompt, with a system prompt, with RAG, and with RAG plus the global prompt - and again with and without MCP tools. Seeing what breaks without each capability is what lets you justify investing in it.
+
+4. *Managed services need not mean the public cloud.* MaaS gave you API keys, stable endpoints, tiers, and usage dashboards while every token stayed inside the cluster - the trade-off regulated industries actually need.
+
+5. *Safety is not optional for production.* No single control is sufficient. Persona access controls who can ask, guardrails control what can be asked and answered, and sandboxes control what an agent can do once it is running.
+
+6. *Observability enables trust.* When a regulator asks "why did the AI recommend this?", a trace answers with timestamps, inputs, outputs, and every decision in between.
+
+== Next steps
+
+* *Start with inference*: deploy a model from the catalog, then publish it through MaaS so other teams consume it instead of redeploying it
+* *Ground in your data*: upload your own policy documents via the Knowledge tab and compare answers before and after
+* *Trace everything*: enable MLflow tracing early, so you have a trace corpus before you need it for an incident
+* *Evaluate before shipping*: wire an evaluation run into your prompt-change workflow, so a quality drop blocks the change the way a failing test blocks a merge
+* *Secure your agents*: start deny-by-default and open up only what the agent proves it needs
+
+== Resources
+
+* https://docs.redhat.com/en/documentation/red_hat_openshift_ai/[Red Hat OpenShift AI Documentation]
+* https://mlflow.org/docs/latest/[MLflow Documentation]
+* https://langchain-ai.github.io/langgraph/[LangGraph Documentation]
+* https://modelcontextprotocol.io/[Model Context Protocol Specification]
+* https://docs.nvidia.com/nemo/guardrails/[NeMo Guardrails Documentation]
+* https://docs.garak.ai/[Garak Documentation]
+* https://github.com/NVIDIA/OpenShell[OpenShell on GitHub]
+
+== Feedback
+
+We value your feedback! Please share your experience with this workshop to help us improve future iterations.
+
+Thank you for participating in the {company_name} AI Workshop.

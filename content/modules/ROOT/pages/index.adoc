@@ -1,27 +1,12 @@
-= Red Hat OpenShift AI 3 Features Workshop
-:navtitle: Welcome
+= {company_name} AI Workshop with Red Hat AI
+:icons: font
 
-Welcome to the *Red Hat OpenShift AI 3 Features Workshop*.
+Welcome to the {company_name} AI Workshop!
 
-In this workshop you take the role of an engineer at *Fed Aura Capital*, a mortgage lending firm running a production AI platform on Red Hat OpenShift AI. The platform is already deployed — your job is to explore, configure, and extend each layer of it across nine hands-on modules.
+This workshop was created and is maintained by the https://rh-aiservices-bu.github.io/cai/[Red Hat CAI Team]. A big thanks to all the https://github.com/rh-aiservices-bu/fed-aura-capital-rhai-workshop/graphs/contributors[contributors] who helped shape the content, test the labs, and provide feedback along the way - this workshop wouldn't be possible without you.
 
-== What you will do
+If you have any questions or run into issues, reach out to https://github.com/rcarrata[Roberto Carratalá] or https://github.com/ckavili[Cansu Kavili-Örnek], or open an https://github.com/rh-aiservices-bu/fed-aura-capital-rhai-workshop/issues[issue in the repository].
 
-* Deploy and benchmark LLM inference with GPU acceleration
-* Publish governed model endpoints and manage API access
-* Design and version prompts in the GenAI Playground
-* Build a predictive AutoML model for loan underwriting
-* Enable RAG-grounded responses with a private policy document
-* Route and fail over agentic traffic with OGX
-* Invoke mortgage domain tools through the MCP gateway
-* Trace and evaluate agent quality with MLflow
-* Enforce AI safety with NeMo Guardrails and OpenShell sandboxing
+Happy learning!
 
-== How to use this guide
-
-Work through each module in order. All infrastructure is pre-provisioned — no local setup is required. Use the browser tabs provided in your Showroom environment.
-
-Log in to OpenShift with:
-
-* Username: [.notranslate]#{user}#
-* Password: [.notranslate]#{password}#
+include::partial$workshop-intro.adoc[]
