@@ -38,5 +38,31 @@ data:
     cd "$WORKDIR/guide"
     chmod +x scripts/*.sh manifests/*/*.sh 2>/dev/null || true
 
+    # The installer's RHOAI-configuration phase applies its own DataScienceCluster,
+    # DSCInitialization and OdhDashboardConfig. It skips that phase only when the
+    # DSC already reports aigateway.modelsAsAService=Managed, which admin/openshift-ai
+    # sets. Sync waves alone are not enough: admin/openshift-ai cannot create the DSC
+    # until the RHOAI CRDs exist, so it can still be Missing when this Job starts.
+    # Wait for the contract to hold before running, otherwise the script and ArgoCD
+    # both end up owning the DSC.
+    if [ "${WAIT_FOR_DSC:-true}" = "true" ]; then
+      echo "Waiting for DSC aigateway.modelsAsAService=Managed (timeout ${DSC_WAIT_TIMEOUT:-1800}s)"
+      _deadline=$(( $(date +%s) + ${DSC_WAIT_TIMEOUT:-1800} ))
+      while :; do
+        _state=$(oc get datasciencecluster default-dsc \
+          -o jsonpath='{.spec.components.aigateway.modelsAsAService.managementState}' 2>/dev/null || true)
+        if [ "${_state}" = "Managed" ]; then
+          echo "DSC reports modelsAsAService=Managed - the installer will skip its RHOAI phase"
+          break
+        fi
+        if [ "$(date +%s)" -ge "${_deadline}" ]; then
+          echo "WARNING: timed out waiting for the DSC. Continuing anyway; the installer"
+          echo "WARNING: will apply its own DSC and ArgoCD will reconcile it afterwards."
+          break
+        fi
+        sleep 10
+      done
+    fi
+
     echo "Running setup-maas.sh $*"
     exec ./scripts/setup-maas.sh "$@"
