@@ -38,8 +38,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+      # lunr is used by default-site.yml (Pages search); mermaid and tabs are the
+      # two extensions the Showroom Antora image ships, and site.yml declares them.
       - name: install antora
-        run: npm i -g @antora/cli@3.1 @antora/site-generator@3.1 @antora/lunr-extension
+        run: |
+          npm i -g @antora/cli@3.1 @antora/site-generator@3.1 \
+            @antora/lunr-extension \
+            @sntke/antora-mermaid-extension @andrew-jones/antora-tabs-extension
       # site.yml is the playbook Showroom renders in-cluster. Building it here
       # keeps the lab from breaking in RHDP when only GitHub Pages was tested.
       - name: validate showroom playbook (site.yml)

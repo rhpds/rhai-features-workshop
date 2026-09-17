@@ -2,3 +2,6 @@
 www/
 .cache/
 agnosticv/
+
+# Node dependencies
+node_modules/

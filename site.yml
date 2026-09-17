@@ -1,8 +1,17 @@
 ---
-# Antora playbook used by Showroom at runtime (ocp4_workload_showroom_content_antora_playbook).
-# Keep the UI bundle, supplemental files and extension list identical to
-# default-site.yml (the GitHub Pages playbook) so the rendered lab is the same
-# in-cluster and on GitHub Pages. Only site.url differs between the two.
+# Antora playbook used by Showroom in-cluster (ocp4_workload_showroom_content_antora_playbook
+# defaults to site.yml).
+#
+# The extension list MUST match what the Showroom Antora image ships, because its
+# entrypoint runs `antora` directly and never does an npm install. As of
+# quay.io/rhpds/antora:v1.3.0 the image provides exactly:
+#   @sntke/antora-mermaid-extension
+#   @andrew-jones/antora-tabs-extension
+#
+# In particular do NOT add @antora/lunr-extension here: it is not in the image, so
+# Antora fails to resolve it and the lab renders no content at all. Search is only
+# wired up in default-site.yml, which is built by the GitHub Pages workflow where
+# the extension is installed explicitly.
 site:
   title: "Fed Aura Capital AI Workshop with Red Hat AI"
   url: https://rhpds.github.io/rhai-features-workshop
@@ -24,8 +33,12 @@ runtime:
 
 antora:
   extensions:
-    - require: '@antora/lunr-extension'
-      index_latest_only: true
+    - require: '@sntke/antora-mermaid-extension'
+      mermaid_library_url: https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs
+      script_stem: header-scripts
+      mermaid_initialize_options:
+        start_on_load: true
+    - require: '@andrew-jones/antora-tabs-extension'
 
 output:
   dir: ./www
