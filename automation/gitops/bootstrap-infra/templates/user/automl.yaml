@@ -38,6 +38,12 @@ spec:
         syncOptions:
           # CRDs from the DataScienceCluster may not exist yet on first sync.
           - SkipDryRunOnMissingResource=true
+          # The training-data ConfigMap holds a ~310KB CSV. Client-side apply
+          # copies the whole object into the last-applied-configuration
+          # annotation, which cannot exceed 262144 bytes, so the ConfigMap is
+          # rejected and the bucket Job hangs on the missing volume. Server-side
+          # apply does not use that annotation.
+          - ServerSideApply=true
         retry:
           limit: 20
           backoff:
