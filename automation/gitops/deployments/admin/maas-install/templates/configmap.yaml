@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: maas-install-runner-{{ include "maasInstall.refSlug" . }}
+  namespace: {{ .Release.Namespace }}
+data:
+  # Minimal envsubst replacement: the oc CLI image has no gettext, and the
+  # script calls `envsubst '${A} ${B}' < tmpl`. Only the variables named in the
+  # shell-format argument are substituted, matching envsubst's behaviour.
+  envsubst.py: |
+    #!/usr/bin/env python3
+    import os, re, sys
+    fmt = sys.argv[1] if len(sys.argv) > 1 else None
+    data = sys.stdin.read()
+    names = re.findall(r'\$\{(\w+)\}', fmt) if fmt else sorted(
+        set(re.findall(r'\$\{(\w+)\}', data)))
+    for n in names:
+        data = data.replace('${' + n + '}', os.environ.get(n, ''))
+    sys.stdout.write(data)
+  run.sh: |
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    REPO="{{ .Values.guide.repo }}"
+    REF="{{ .Values.guide.ref }}"
+    WORKDIR="$(mktemp -d)"
+
+    # envsubst shim on PATH (no gettext in the oc image).
+    mkdir -p "$WORKDIR/bin"
+    install -m 0755 /runner/envsubst.py "$WORKDIR/bin/envsubst"
+    export PATH="$WORKDIR/bin:$PATH"
+
+    echo "Fetching ${REPO} @ ${REF}"
+    # No git in the image, so use the release tarball.
+    curl -sSfL "${REPO}/archive/refs/tags/${REF}.tar.gz" -o "$WORKDIR/guide.tar.gz"
+    mkdir -p "$WORKDIR/guide"
+    tar -xzf "$WORKDIR/guide.tar.gz" -C "$WORKDIR/guide" --strip-components=1
+    cd "$WORKDIR/guide"
+    chmod +x scripts/*.sh manifests/*/*.sh 2>/dev/null || true
+
+    echo "Running setup-maas.sh $*"
+    exec ./scripts/setup-maas.sh "$@"

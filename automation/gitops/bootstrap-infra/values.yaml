@@ -74,6 +74,18 @@ admin:
   # deployments/admin/openshift-ai/values.yaml.
   openshiftAi:
     enabled: true
+  # MaaS platform install (wave -3). Runs setup-maas.sh from the upstream
+  # rhoai-maas-guide as a Job: operator subscriptions, Kuadrant, UWM,
+  # GatewayClass + Gateway, PostgreSQL, Authorino TLS and maas-api. Required
+  # before admin/maas (wave 1) can create any maas.opendatahub.io resource.
+  maasInstall:
+    enabled: true
+    # Pinned upstream release. Bumping it re-runs the installer Job.
+    guideRef: rhoai3.5
+    rhoaiVersion: "3.5"
+    # Empty lets the script default the gateway to maas.<cluster-domain>.
+    hostname: ""
+    withObservability: false
   # RHOAI dashboard feature flags (wave -1).
   dashboardConfig:
     enabled: true

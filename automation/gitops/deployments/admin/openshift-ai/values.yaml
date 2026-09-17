@@ -13,7 +13,16 @@
 #   mlflowoperator       MLflow CR (admin/mlflow)
 #   ogx                  OGXServer (user/ogx). Replaces llamastackoperator in 3.5.
 #   aigateway            maas.opendatahub.io CRs (admin/maas)
-#   mcplifecycleoperator MCPServerRegistration (mcp.kagenti.com, mortgage-ai)
+#
+# Component values follow manifests/04-rhoai-config/datasciencecluster.yaml from
+# rh-aiservices-bu/rhoai-maas-guide @ rhoai3.5, so this DSC matches the config
+# the MaaS guide validates.
+#
+# aigateway.modelsAsAService MUST stay Managed: admin/maas-install probes
+# .spec.components.aigateway.modelsAsAService.managementState and skips its whole
+# RHOAI-configuration phase when it is Managed. That is what stops the installer
+# script from re-applying its own DSC, DSCI and OdhDashboardConfig and fighting
+# this Application and admin/dashboard-config.
 #
 # DSCI is left null by default: the operator creates a default DSCInitialization,
 # and owning it here as well makes ArgoCD fight the operator over defaulted fields.
@@ -32,21 +41,31 @@ dataScienceCluster:
       managementState: Managed
     kserve:
       managementState: Managed
+      nim:
+        managementState: Managed
       rawDeploymentServiceConfig: Headed
     trustyai:
       managementState: Managed
+      eval:
+        lmeval:
+          permitCodeExecution: deny
+          permitOnline: deny
     mlflowoperator:
       managementState: Managed
     ogx:
       managementState: Managed
+    # MaaS. modelsAsAService must be Managed -- see the note at the top of this
+    # file; admin/maas-install keys its phase-4 skip off this exact field.
     aigateway:
       managementState: Managed
-    mcplifecycleoperator:
-      managementState: Managed
+      modelsAsAService:
+        managementState: Managed
     modelregistry:
       managementState: Managed
       registriesNamespace: rhoai-model-registries
-    # Not used by any workshop module - left off to save cluster capacity.
+    # Not used by any workshop module - left off to save cluster capacity. The
+    # MaaS guide's reference DSC has ray, trainingoperator and feastoperator
+    # Managed; they are only extra controllers, so they are Removed here.
     kueue:
       managementState: Removed
     ray:

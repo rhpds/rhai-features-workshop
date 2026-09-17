@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Name carries the pinned ref: unchanged ref => same completed Job (in sync),
+  # bumped ref => new Job, which is how a re-install is requested from git.
+  name: maas-install-{{ include "maasInstall.refSlug" . }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.job.activeDeadlineSeconds }}
+  template:
+    metadata:
+      labels:
+        app: maas-install
+    spec:
+      serviceAccountName: maas-install
+      restartPolicy: Never
+      containers:
+        - name: setup-maas
+          image: {{ .Values.job.image }}
+          command: ["/bin/bash", "/runner/run.sh"]
+          args:
+            {{- include "maasInstall.args" . | nindent 12 }}
+          env:
+            # The script writes into the guide checkout, so give it a writable HOME.
+            - name: HOME
+              value: /tmp
+          volumeMounts:
+            - name: runner
+              mountPath: /runner
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            {{- toYaml .Values.job.resources | nindent 12 }}
+      volumes:
+        - name: runner
+          configMap:
+            name: maas-install-runner-{{ include "maasInstall.refSlug" . }}
+            defaultMode: 0755
+        - name: tmp
+          emptyDir: {}
