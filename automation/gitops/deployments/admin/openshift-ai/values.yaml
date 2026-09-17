@@ -1,0 +1,80 @@
+# DSCInitialization + DataScienceCluster.
+#
+# Modelled on rhpds/agentops-in-prod-automation deployments/openshift-ai, with the
+# component list updated for RHOAI 3.5 and for what this workshop's charts create.
+#
+# Component -> what needs it (see automation/gitops/README.md):
+#   dashboard            OdhDashboardConfig (admin/dashboard-config), MaaS consumer portal
+#   workbenches          custom workbench ImageStream + KubernetesImagePuller
+#   aipipelines          DataSciencePipelinesApplication (user/dspa, admin/evalhub)
+#   kserve               ServingRuntime / InferenceService (model catalog),
+#                        LLMInferenceService (admin/llmd, opt-in)
+#   trustyai             EvalHub (admin/evalhub) and NemoGuardrails (mortgage-ai)
+#   mlflowoperator       MLflow CR (admin/mlflow)
+#   ogx                  OGXServer (user/ogx). Replaces llamastackoperator in 3.5.
+#   aigateway            maas.opendatahub.io CRs (admin/maas)
+#
+# Component values follow manifests/04-rhoai-config/datasciencecluster.yaml from
+# rh-aiservices-bu/rhoai-maas-guide @ rhoai3.5, so this DSC matches the config
+# the MaaS guide validates.
+#
+# aigateway.modelsAsAService MUST stay Managed: admin/maas-install probes
+# .spec.components.aigateway.modelsAsAService.managementState and skips its whole
+# RHOAI-configuration phase when it is Managed. That is what stops the installer
+# script from re-applying its own DSC, DSCI and OdhDashboardConfig and fighting
+# this Application and admin/dashboard-config.
+#
+# DSCI is left null by default: the operator creates a default DSCInitialization,
+# and owning it here as well makes ArgoCD fight the operator over defaulted fields.
+dataScienceClusterInitialization: null
+
+dataScienceCluster:
+  create: true
+  version: v2
+  components:
+    dashboard:
+      managementState: Managed
+    workbenches:
+      managementState: Managed
+      workbenchNamespace: rhods-notebooks
+    aipipelines:
+      managementState: Managed
+    kserve:
+      managementState: Managed
+      nim:
+        managementState: Managed
+      rawDeploymentServiceConfig: Headed
+    trustyai:
+      managementState: Managed
+      eval:
+        lmeval:
+          permitCodeExecution: deny
+          permitOnline: deny
+    mlflowoperator:
+      managementState: Managed
+    ogx:
+      managementState: Managed
+    # MaaS. modelsAsAService must be Managed -- see the note at the top of this
+    # file; admin/maas-install keys its phase-4 skip off this exact field.
+    aigateway:
+      managementState: Managed
+      modelsAsAService:
+        managementState: Managed
+    modelregistry:
+      managementState: Managed
+      registriesNamespace: rhoai-model-registries
+    # Not used by any workshop module - left off to save cluster capacity. The
+    # MaaS guide's reference DSC has ray, trainingoperator and feastoperator
+    # Managed; they are only extra controllers, so they are Removed here.
+    kueue:
+      managementState: Removed
+    ray:
+      managementState: Removed
+    trainingoperator:
+      managementState: Removed
+    trainer:
+      managementState: Removed
+    feastoperator:
+      managementState: Removed
+    sparkoperator:
+      managementState: Removed

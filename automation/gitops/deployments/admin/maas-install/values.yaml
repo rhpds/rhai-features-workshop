@@ -1,0 +1,45 @@
+# MaaS platform installation.
+#
+# The MaaS platform (operator subscriptions, Kuadrant, UWM, GatewayClass +
+# Gateway, PostgreSQL, Authorino TLS, maas-api) is installed by the upstream
+# script from rh-aiservices-bu/rhoai-maas-guide rather than re-implemented here,
+# so this workshop tracks whatever the MaaS guide validates for an RHOAI release.
+#
+# The script is idempotent per phase; this chart makes the *execution* idempotent
+# under GitOps: the Job name is derived from guide.ref, so a synced cluster keeps
+# one completed Job and bumping the ref creates a new one.
+guide:
+  repo: https://github.com/rh-aiservices-bu/rhoai-maas-guide
+  # Pinned release. Bumping this re-runs the installer.
+  ref: rhoai3.5
+  # Passed as --rhoai-version. The script ignores it when RHOAI is already
+  # installed (it auto-detects), which it is by this sync wave.
+  rhoaiVersion: "3.5"
+
+job:
+  # Repo standard image: provides oc, openssl, python3, curl and tar. It does
+  # NOT provide envsubst (needed by the script's gateway templates) or git, so
+  # the runner installs a small envsubst shim and fetches a tarball instead of
+  # cloning.
+  image: registry.redhat.io/openshift4/ose-cli:latest
+  backoffLimit: 4
+  activeDeadlineSeconds: 3600
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+# Phase 5 (deploy model) and 6 (verify) are skipped: the workshop serves its own
+# models via admin/model-catalog and registers the upstream endpoint via
+# admin/maas, and verification needs a served model.
+args:
+  skipModels: true
+  skipVerify: true
+  withObservability: false
+  # Gateway hostname. Empty lets the script default to maas.<cluster-domain>,
+  # which is what content/antora.yml documents.
+  maasHostname: ""
+  extraArgs: []

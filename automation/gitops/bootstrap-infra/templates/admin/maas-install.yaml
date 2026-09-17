@@ -1,0 +1,47 @@
+{{- if and .Values.admin.enabled .Values.admin.maasInstall.enabled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: admin-maas-install
+  namespace: {{ .Values.bootstrap.argoNamespace }}
+  annotations:
+    # Wave -3: after the DataScienceCluster (-4). The installer's RHOAI-config
+    # phase is skipped only when the DSC already reports
+    # aigateway.modelsAsAService=Managed, which is what keeps the script and
+    # admin/openshift-ai from fighting over the DSC, DSCI and
+    # OdhDashboardConfig. Runs before admin/maas (wave 1), which creates the
+    # maas.opendatahub.io CRs whose CRDs this installs.
+    argocd.argoproj.io/sync-wave: "-3"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.bootstrap.project }}
+  destination:
+    name: in-cluster
+    namespace: redhat-ods-operator
+  source:
+    repoURL: {{ .Values.bootstrap.repoURL }}
+    targetRevision: {{ .Values.bootstrap.targetRevision }}
+    path: {{ include "bootstrap.path" (dict "ctx" . "chart" "admin/maas-install") }}
+    helm:
+      valuesObject:
+        guide:
+          ref: {{ .Values.admin.maasInstall.guideRef | quote }}
+          rhoaiVersion: {{ .Values.admin.maasInstall.rhoaiVersion | quote }}
+        args:
+          maasHostname: {{ .Values.admin.maasInstall.hostname | quote }}
+          withObservability: {{ .Values.admin.maasInstall.withObservability }}
+  syncPolicy:
+    automated:
+      # Never prune: that would delete the completed installer Job and the
+      # cluster-admin binding it ran with.
+      prune: false
+      selfHeal: true
+    retry:
+      limit: 5
+      backoff:
+        duration: 30s
+        maxDuration: 10m
+        factor: 2
+{{- end }}

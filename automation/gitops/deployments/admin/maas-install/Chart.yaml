@@ -1,0 +1,6 @@
+apiVersion: v2
+name: maas-install
+description: Runs the upstream rhoai-maas-guide setup-maas.sh as a Job to install the MaaS platform (Kuadrant, gateway, maas-api)
+type: application
+version: 0.1.0
+appVersion: "rhoai3.5"

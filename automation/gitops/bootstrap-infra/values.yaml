@@ -60,6 +60,32 @@ minio:
 # ---------------------------------------------------------------------------
 admin:
   enabled: true
+  # Red Hat OpenShift AI operator subscription (wave -5). Everything else in this
+  # chart creates RHOAI custom resources, so without this nothing can sync.
+  openshiftAiOperator:
+    enabled: true
+    # RHOAI 3.5 is required: it provides the ogx, mlflowoperator, aigateway and
+    # mcplifecycleoperator DSC components the workshop modules depend on.
+    channel: stable-3.5
+    # Pin a CSV (e.g. rhods-operator.3.5.0) for a reproducible event; empty
+    # tracks the channel.
+    startingCSV: ""
+  # DSCInitialization + DataScienceCluster (wave -4). Component list lives in
+  # deployments/admin/openshift-ai/values.yaml.
+  openshiftAi:
+    enabled: true
+  # MaaS platform install (wave -3). Runs setup-maas.sh from the upstream
+  # rhoai-maas-guide as a Job: operator subscriptions, Kuadrant, UWM,
+  # GatewayClass + Gateway, PostgreSQL, Authorino TLS and maas-api. Required
+  # before admin/maas (wave 1) can create any maas.opendatahub.io resource.
+  maasInstall:
+    enabled: true
+    # Pinned upstream release. Bumping it re-runs the installer Job.
+    guideRef: rhoai3.5
+    rhoaiVersion: "3.5"
+    # Empty lets the script default the gateway to maas.<cluster-domain>.
+    hostname: ""
+    withObservability: false
   # RHOAI dashboard feature flags (wave -1).
   dashboardConfig:
     enabled: true

@@ -19,10 +19,11 @@ automation/gitops/
 │   ├── values.yaml                  # user count, repo, cluster domain, injected credentials
 │   └── templates/
 │       ├── extra-resources/gitops.yaml   # openshift-gitops namespace + ArgoCD tuning
-│       ├── admin/*.yaml             # 8 Applications      (sync-waves -1 .. 3)
+│       ├── admin/*.yaml             # 11 Applications     (sync-waves -5 .. 3)
 │       └── user/*.yaml              # 7 ApplicationSets   (sync-waves  5 .. 9)
 └── deployments/
-    ├── admin/{dashboard-config,mlflow,mcp,workbench-image,model-catalog,maas,llmd,evalhub}
+    ├── admin/{openshift-ai-operator,openshift-ai,maas-install,dashboard-config,mlflow,mcp,
+    │           workbench-image,model-catalog,maas,llmd,evalhub}
     ├── user/{workspace,minio,dspa,automl,model-catalog,ogx}
     └── mortgage-ai/                 # vendored multi-agent application chart
 ```
@@ -30,6 +31,64 @@ automation/gitops/
 `mortgage-ai` has no chart under `deployments/user/`: the ApplicationSet points
 at the vendored chart in [`deployments/mortgage-ai`](deployments/mortgage-ai) and
 injects per-user values, so the GitOps and standalone installs never drift.
+
+## Cluster prerequisites
+
+The only prerequisites are OpenShift itself plus the OpenShift GitOps operator.
+RHOAI is **not** a prerequisite: `admin/openshift-ai-operator` (wave -5) installs
+it and `admin/openshift-ai` (wave -4) creates the `DataScienceCluster`, so the
+app-of-apps is self-contained and the agnosticv item does not need an RHOAI
+workload.
+
+RHOAI **3.5 or newer** is required. Every other chart here creates RHOAI custom
+resources, and these are the components that provide them:
+
+| DSC component | provides | used by |
+|---|---|---|
+| `dashboard` | `OdhDashboardConfig`, MaaS consumer portal | `admin/dashboard-config` |
+| `workbenches` | workbench `ImageStream`, `KubernetesImagePuller` | `admin/workbench-image` |
+| `aipipelines` | `DataSciencePipelinesApplication` | `user/dspa`, `admin/evalhub` |
+| `kserve` | `ServingRuntime`, `InferenceService`, `LLMInferenceService` | `*/model-catalog`, `admin/llmd` |
+| `trustyai` | `EvalHub`, `NemoGuardrails` | `admin/evalhub`, `user/mortgage-ai` |
+| `mlflowoperator` | `MLflow` | `admin/mlflow` |
+| `ogx` | `OGXServer` (replaces `llamastackoperator` in 3.5) | `user/ogx` |
+| `aigateway` | `maas.opendatahub.io` CRs | `admin/maas` |
+
+### MaaS
+
+`aigateway` gives you the `maas.opendatahub.io` CRDs, but the MaaS *platform*
+(operator subscriptions, Kuadrant, user-workload monitoring, GatewayClass +
+Gateway, PostgreSQL, Authorino TLS, `maas-api`) is installed by
+`admin/maas-install`, which runs `scripts/setup-maas.sh` from
+[rh-aiservices-bu/rhoai-maas-guide](https://github.com/rh-aiservices-bu/rhoai-maas-guide)
+as a Job, pinned to a release tag. That keeps this workshop on whatever the MaaS
+guide validates for a given RHOAI release instead of re-implementing it.
+
+The script is idempotent per phase; the chart makes the *execution* idempotent:
+the Job name carries `guide.ref`, so an unchanged ref leaves one completed Job
+and an in-sync Application, and bumping the ref creates a new Job. Phases 5
+(deploy model) and 6 (verify) are skipped -- the workshop serves its own models.
+
+**The DSC contract matters here.** The script's RHOAI-configuration phase applies
+its own `DataScienceCluster`, `DSCInitialization` and `OdhDashboardConfig`, which
+would fight `admin/openshift-ai` and `admin/dashboard-config`. It skips that whole
+phase when the DSC already reports
+`.spec.components.aigateway.modelsAsAService.managementState: Managed`, which
+`admin/openshift-ai` sets -- so do not change that field.
+
+The `oc` CLI image has no `envsubst` (the script uses it for the gateway
+templates) and no `git`, so the runner ships a small `envsubst` shim and fetches
+the release tarball with `curl`.
+
+### Not covered by the DSC
+
+- `AgentRuntime` (`agent.kagenti.dev`) and `MCPServerRegistration`
+  (`mcp.kagenti.com`) in `user/mortgage-ai` come from Kagenti, which is **not
+  part of the product**. Nothing here installs it, so those resources need to be
+  dropped from the mortgage-ai chart or made opt-in.
+- `admin/llmd` additionally needs Gateway API plus the
+  `cert-manager-ingress-cert` secret in `openshift-ingress`, which is why it is
+  off by default.
 
 ## Two-phase rollout
 
@@ -65,6 +124,9 @@ ApplicationSets grow, existing users are untouched.
 
 | wave | component |
 |------|-----------|
+| `-5` | `admin/openshift-ai-operator` -- RHOAI subscription; everything below needs its CRDs |
+| `-4` | `admin/openshift-ai` -- `DataScienceCluster` (component set for the workshop) |
+| `-3` | `admin/maas-install` -- runs upstream `setup-maas.sh` (Kuadrant, gateway, `maas-api`) |
 | `-1` | `admin/dashboard-config` -- RHOAI dashboard feature flags |
 | `0`  | `admin/mlflow`, `admin/mcp`, `admin/workbench-image` |
 | `1`  | `admin/model-catalog`, `admin/maas` |
@@ -122,7 +184,7 @@ fac_bootstrap_values:
     rootPassword: "{{ common_password }}"
   users:
     mortgageAi:
-      chartPath: automation/automation/gitops/deployments/mortgage-ai
+      chartPath: automation/gitops/deployments/mortgage-ai
 ```
 
 ## Component toggles
