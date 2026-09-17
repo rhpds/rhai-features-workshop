@@ -1,0 +1,33 @@
+{{- if and .Values.admin.enabled .Values.admin.openshiftAiOperator.enabled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: admin-openshift-ai-operator
+  namespace: {{ .Values.bootstrap.argoNamespace }}
+  annotations:
+    # Wave -5: nothing else can sync until the RHOAI CRDs exist.
+    argocd.argoproj.io/sync-wave: "-5"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.bootstrap.project }}
+  destination:
+    name: in-cluster
+    namespace: redhat-ods-operator
+  source:
+    repoURL: {{ .Values.bootstrap.repoURL }}
+    targetRevision: {{ .Values.bootstrap.targetRevision }}
+    path: {{ include "bootstrap.path" (dict "ctx" . "chart" "admin/openshift-ai-operator") }}
+    helm:
+      valuesObject:
+        operator:
+          channel: {{ .Values.admin.openshiftAiOperator.channel | quote }}
+          startingCSV: {{ .Values.admin.openshiftAiOperator.startingCSV | quote }}
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}

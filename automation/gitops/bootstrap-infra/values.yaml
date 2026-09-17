@@ -60,6 +60,20 @@ minio:
 # ---------------------------------------------------------------------------
 admin:
   enabled: true
+  # Red Hat OpenShift AI operator subscription (wave -5). Everything else in this
+  # chart creates RHOAI custom resources, so without this nothing can sync.
+  openshiftAiOperator:
+    enabled: true
+    # RHOAI 3.5 is required: it provides the ogx, mlflowoperator, aigateway and
+    # mcplifecycleoperator DSC components the workshop modules depend on.
+    channel: stable-3.5
+    # Pin a CSV (e.g. rhods-operator.3.5.0) for a reproducible event; empty
+    # tracks the channel.
+    startingCSV: ""
+  # DSCInitialization + DataScienceCluster (wave -4). Component list lives in
+  # deployments/admin/openshift-ai/values.yaml.
+  openshiftAi:
+    enabled: true
   # RHOAI dashboard feature flags (wave -1).
   dashboardConfig:
     enabled: true

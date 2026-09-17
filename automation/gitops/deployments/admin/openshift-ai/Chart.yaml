@@ -1,0 +1,6 @@
+apiVersion: v2
+name: openshift-ai
+description: DSCInitialization + DataScienceCluster for the workshop (component set required by the Fed Aura Capital modules)
+type: application
+version: 0.1.0
+appVersion: "3.5"
