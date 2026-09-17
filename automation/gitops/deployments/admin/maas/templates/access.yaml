@@ -11,20 +11,26 @@ spec:
   subjects:
     groups:
       - name: system:authenticated
+{{- range .Values.subscriptions }}
 ---
 apiVersion: maas.opendatahub.io/v1alpha1
 kind: MaaSSubscription
 metadata:
-  name: {{ .Values.model.name }}-free
-  namespace: {{ .Values.namespaces.tenant }}
+  name: {{ $.Values.model.name }}-{{ .name }}
+  namespace: {{ $.Values.namespaces.tenant }}
+  {{- with .displayName }}
+  annotations:
+    openshift.io/display-name: {{ . | quote }}
+  {{- end }}
 spec:
   modelRefs:
-    - name: {{ .Values.model.name }}
-      namespace: {{ .Values.namespaces.externalModels }}
+    - name: {{ $.Values.model.name }}
+      namespace: {{ $.Values.namespaces.externalModels }}
       tokenRateLimits:
-        - limit: {{ .Values.subscription.tokenLimit }}
-          window: {{ .Values.subscription.window }}
+        - limit: {{ .tokenLimit }}
+          window: {{ .window }}
   owner:
     groups:
       - name: system:authenticated
-  priority: {{ .Values.subscription.priority }}
+  priority: {{ .priority }}
+{{- end }}

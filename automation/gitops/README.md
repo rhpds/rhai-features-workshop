@@ -80,6 +80,27 @@ The `oc` CLI image has no `envsubst` (the script uses it for the gateway
 templates) and no `git`, so the runner ships a small `envsubst` shim and fetches
 the release tarball with `curl`.
 
+### MaaS resources and subscription tiers
+
+`admin/maas` (wave 1) creates everything the MaaS module needs on top of the
+platform installed at wave -3: the `external-models` namespace, `Config`,
+`AITenant`, `MaasTenantConfig`, the provider API-key `Secret`, `ExternalProvider`,
+`ExternalModel`, `MaaSModelRef`, `MaaSAuthPolicy` and one `MaaSSubscription` per
+tier. It sits at wave 1 precisely because every one of those CRDs comes from the
+`aigateway` component and the installer Job, so it must not run earlier.
+
+The tiers are values, and they must match the table the lab shows users in
+`02-inference/04-access-a-model-through-maas.adoc`:
+
+| tier | rate limit |
+|---|---|
+| Free Tier | 100 tokens / minute |
+| Premium Tier | 10,000 tokens / minute |
+
+The manifests migrated from `templates/admin/maas/` only had a single `free`
+subscription of 10,000 tokens per *hour*, so the lab asked users to choose
+between two tiers when only one existed.
+
 ### Not covered by the DSC
 
 - `AgentRuntime` (`agent.kagenti.dev`) and `MCPServerRegistration`
@@ -129,7 +150,7 @@ ApplicationSets grow, existing users are untouched.
 | `-3` | `admin/maas-install` -- runs upstream `setup-maas.sh` (Kuadrant, gateway, `maas-api`) |
 | `-1` | `admin/dashboard-config` -- RHOAI dashboard feature flags |
 | `0`  | `admin/mlflow`, `admin/mcp`, `admin/workbench-image` |
-| `1`  | `admin/model-catalog`, `admin/maas` |
+| `1`  | `admin/model-catalog`, `admin/maas` -- MaaS CRs, after `maas-install` has provided the CRDs |
 | `2`  | `admin/llmd` (opt-in) |
 | `3`  | `admin/evalhub` |
 | `5`  | `user/workspace` -- namespace + injected LLM credentials |

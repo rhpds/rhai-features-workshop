@@ -13,7 +13,23 @@ namespaces:
   tenant: models-as-a-service
 gateway:
   name: maas-default-gateway
-subscription:
-  tokenLimit: 10000
-  window: 1h
-  priority: 10
+# Subscription tiers offered on the endpoint. These are what the user picks from
+# in the "Generate API Key" dialog, so they must match the tier table in
+# content/modules/ROOT/pages/02-inference/04-access-a-model-through-maas.adoc:
+#
+#   Free Tier     100 tokens / minute
+#   Premium Tier  10,000 tokens / minute
+#
+# The migrated manifests only had a single "free" subscription of 10000 tokens
+# per hour, so the lab asked users to choose a tier that did not exist.
+subscriptions:
+  - name: free
+    displayName: Free Tier
+    tokenLimit: 100
+    window: 1m
+    priority: 10
+  - name: premium
+    displayName: Premium Tier
+    tokenLimit: 10000
+    window: 1m
+    priority: 20
