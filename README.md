@@ -28,6 +28,7 @@ Claude will walk you through the entire content lifecycle — from intake and sp
    - **CLI:** Open a terminal and run `claude`
 3. Run `/rhdp-publishing-house` — and you're off!
 
+
 ### Local machine
 
 1. Install the skills:
