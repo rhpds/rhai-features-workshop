@@ -42,8 +42,17 @@ spec:
               MCP_RISK_SERVER_URL: "http://mcp-risk-server.mcp-servers.svc.cluster.local:8081/mcp"
               # MLflow -- in-cluster RHOAI MLflow, authenticated with the pod's
               # ServiceAccount token (no manually minted token needed).
-              MLFLOW_TRACKING_URI: "https://mlflow.redhat-ods-applications.svc.cluster.local:8443"
-              MLFLOW_TRACKING_AUTH: "kubernetes"
+              # The RHOAI MLflow server is served under a /mlflow path prefix. Without
+              # it the client's workspace probe (/api/3.0/mlflow/server-info) 404s, the
+              # client concludes the server has no workspace support, and every call
+              # fails - either "Workspace context is required for this request" or
+              # "Active workspace cannot be used because the remote server does not
+              # support workspaces".
+              MLFLOW_TRACKING_URI: "https://mlflow.redhat-ods-applications.svc.cluster.local:8443/mlflow"
+              # MLFLOW_TRACKING_AUTH is deliberately unset: "kubernetes" is not a
+              # registered request-auth provider in the mortgage-ai image (verified on
+              # 1.0.2 and 1.0.3), so it silently added no Authorization header and the
+              # server answered 401. The token below is what actually authenticates.
               MLFLOW_EXPERIMENT_NAME: "mortgage-ai"
               MLFLOW_WORKSPACE: "{{ .Values.user.namespacePrefix }}-{{ `{{ user }}` }}"
               MLFLOW_TRACKING_INSECURE_TLS: "true"
