@@ -2,7 +2,12 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "mortgage-ai.fullname" . }}-seed
+  # Versioned name, and deliberately NOT an ArgoCD hook. This Job runs
+  # `python -m src.seed --force`, which the seed script documents as "Clear and
+  # re-seed" - so re-running it destroys whatever the user built during the workshop.
+  # With the previous TTL the Job vanished after ten minutes and any later re-apply
+  # would silently wipe their data. Bump seed.version to re-seed on purpose.
+  name: {{ include "mortgage-ai.fullname" . }}-seed-v{{ .Values.seed.version }}
   labels:
     {{- include "mortgage-ai.api.labels" . | nindent 4 }}
     app.kubernetes.io/component: seed
@@ -13,7 +18,6 @@ metadata:
     helm.sh/hook-delete-policy: before-hook-creation
 spec:
   backoffLimit: 3
-  ttlSecondsAfterFinished: 600
   template:
     metadata:
       labels:

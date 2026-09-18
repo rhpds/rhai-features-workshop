@@ -28,7 +28,9 @@ job:
   image: quay.io/rh-aiservices-bu/fedaura-codeserver:1.3
   backoffLimit: 6
   activeDeadlineSeconds: 1800
-  ttlSecondsAfterFinished: 86400
+  # No TTL: the name already carries sandbox.provisionVersion, so the Job is
+  # run-once and ArgoCD keeps seeing it. With a TTL it disappeared after a day and
+  # the Application then reported drift against a resource meant to be gone.
   resources:
     requests:
       cpu: 50m

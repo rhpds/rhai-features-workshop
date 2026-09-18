@@ -393,6 +393,8 @@ kagenti:
 # Seed data (demo data for demos / dev environments)
 seed:
   enabled: false
+  # Part of the Job name. Bump to re-seed, which clears existing data first.
+  version: 1
 
 # ServiceAccount
 serviceAccount:
