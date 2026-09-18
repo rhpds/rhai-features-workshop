@@ -6,6 +6,15 @@ namespacePrefix: wksp
 # visible as an RHOAI project and discoverable as an MLflow workspace.
 dashboardLabel: "true"
 
+# Access for the workshop user to their own namespace. The authentication workload
+# creates the accounts but does not know about these namespaces, so this is the only
+# thing that binds the two together.
+rbac:
+  enabled: true
+  # "admin" lets the user manage their own project: create workbenches, deploy
+  # models, run pipelines. "edit" would block them from managing RoleBindings.
+  role: admin
+
 # LLM credentials injected from agnosticv (bootstrap-infra remotellm.*).
 # Consumed by workbenches, notebooks and the exercises in the workshop content.
 remotellm:
