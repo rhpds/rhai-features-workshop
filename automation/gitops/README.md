@@ -107,6 +107,13 @@ between two tiers when only one existed.
   (`mcp.kagenti.com`) in `user/mortgage-ai` come from Kagenti, which is **not
   part of the product**. Nothing here installs it, so those resources need to be
   dropped from the mortgage-ai chart or made opt-in.
+- `KubernetesImagePuller` (`che.eclipse.org`) comes from the DevWorkspace/Che
+  operator, not from the `workbenches` DSC component. `admin/workbench-image`
+  therefore ships the puller **off** (`admin.workbenchImage.imagePuller`): with it
+  on and the CRD absent, the Application cannot sync at all and the custom
+  workbench `ImageStream` is lost with it. Turn it on only where
+  `oc get crd kubernetesimagepullers.che.eclipse.org` succeeds; the workbench
+  image works without it, the first start is just slower.
 - `admin/llmd` additionally needs Gateway API plus the
   `cert-manager-ingress-cert` secret in `openshift-ingress`, which is why it is
   off by default.

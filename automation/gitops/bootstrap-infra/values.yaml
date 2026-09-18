@@ -95,9 +95,14 @@ admin:
   # Shared risk + weather MCP servers (wave 0).
   mcp:
     enabled: true
-  # Custom code-server ImageStream + image puller (wave 0).
+  # Custom code-server ImageStream (wave 0).
   workbenchImage:
     enabled: true
+    # Pre-pull the image on every node. Requires the che.eclipse.org
+    # KubernetesImagePuller CRD (DevWorkspace/Che operator), which neither this
+    # chart nor RHOAI installs, so it is off by default -- with it on and the CRD
+    # missing, the Application cannot sync at all and the ImageStream is lost too.
+    imagePuller: false
   # Custom CPU model catalog, serving runtime template, llm-d configs (wave 1).
   modelCatalog:
     enabled: true
