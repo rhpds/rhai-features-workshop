@@ -18,6 +18,12 @@ spec:
     repoURL: {{ .Values.bootstrap.repoURL }}
     targetRevision: {{ .Values.bootstrap.targetRevision }}
     path: {{ include "bootstrap.path" (dict "ctx" . "chart" "admin/workbench-image") }}
+    helm:
+      valuesObject:
+        imagePuller:
+          # Needs the che.eclipse.org KubernetesImagePuller CRD, which nothing in
+          # this chart installs -- see deployments/admin/workbench-image/values.yaml.
+          enabled: {{ .Values.admin.workbenchImage.imagePuller }}
   ignoreDifferences:
     # The image controller rewrites tag metadata after import.
     - group: image.openshift.io
