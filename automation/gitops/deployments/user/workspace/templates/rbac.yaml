@@ -1,0 +1,26 @@
+{{- if .Values.rbac.enabled }}
+---
+# Gives the workshop user access to their own namespace.
+#
+# Nothing else grants this. ocp4_workload_authentication creates the accounts in
+# Keycloak but knows nothing about the wksp-* namespaces, which this chart creates,
+# so without this RoleBinding `oc auth can-i get pods -n wksp-user1 --as=user1`
+# answers "no": the user cannot see their workspace in the terminal, in the
+# OpenShift console, or as an RHOAI project - even though every module works inside
+# it.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "workshop.namespace" . }}-{{ .Values.rbac.role }}
+  namespace: {{ include "workshop.namespace" . }}
+  labels:
+    app.kubernetes.io/component: workshop-rbac
+subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: {{ .Values.username }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ .Values.rbac.role }}
+{{- end }}
