@@ -56,6 +56,27 @@ spec:
               MLFLOW_EXPERIMENT_NAME: "mortgage-ai"
               MLFLOW_WORKSPACE: "{{ .Values.user.namespacePrefix }}-{{ `{{ user }}` }}"
               MLFLOW_TRACKING_INSECURE_TLS: "true"
+            # NeMo Guardrails. The API logs "Safety shields: DEGRADED
+            # (NEMO_GUARDRAILS_ENDPOINT not set, shields disabled)" when this is off,
+            # and module 5.2 has nothing to exercise. The chart wires
+            # NEMO_GUARDRAILS_ENDPOINT to the in-namespace service automatically.
+            nemoGuardrails:
+              enabled: {{ .Values.users.mortgageAi.guardrails.enabled }}
+              # The NemoGuard 8B detector needs a GPU (nvidia.com/mig-2g.35gb) and an
+              # S3 bucket holding the model weights, neither of which this workshop
+              # provisions - the GPU machineset is deliberately at 0 replicas. The
+              # content_safety flows and prompts are gated on this flag, so with it off
+              # the rails still run: regex input/output detection, sensitive-data
+              # detection (SSN, credit card, email, phone) and the competitor policy,
+              # all judged by the same model the agents use.
+              contentSafety:
+                deploy: {{ .Values.users.mortgageAi.guardrails.contentSafety }}
+              # The nginx hop only exists to rewrite paths for MaaS deployments that
+              # serve a model under a prefix. The injected endpoint is already an
+              # OpenAI-compatible base URL ending in /v1, so NeMo can talk to it
+              # directly and an unconfigured proxy would just break the rails.
+              proxy:
+                enabled: {{ .Values.users.mortgageAi.guardrails.proxy }}
             # Components provided by other charts in this repo
             keycloak:
               enabled: false

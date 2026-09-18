@@ -7,6 +7,9 @@ model:
   apiKey: ""
   apiFormat: openai-chat
   path: /v1/chat/completions
+  # Traffic weight for the single provider. Must match what the operator defaults
+  # to, or ArgoCD reports drift on every refresh.
+  weight: 1
 namespaces:
   externalModels: external-models
   aiTenants: ai-tenants
