@@ -147,6 +147,15 @@ users:
   # Multi-agent mortgage application (wave 9).
   mortgageAi:
     enabled: true
+    # NeMo Guardrails (module 5.2). Requires the trustyai DSC component for the
+    # NemoGuardrails CRD, which admin/openshift-ai enables.
+    guardrails:
+      enabled: true
+      # NemoGuard 8B content-safety detector. Needs a GPU and S3-hosted weights,
+      # so it stays off; the regex, sensitive-data and competitor rails do not.
+      contentSafety: false
+      # nginx path-rewriting hop, only needed for prefixed MaaS deployments.
+      proxy: false
     # Vendored chart, shared with the standalone install.
     chartPath: automation/gitops/deployments/mortgage-ai
     uiImageTag: "latest"

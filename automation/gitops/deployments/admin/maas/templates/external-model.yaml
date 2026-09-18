@@ -38,6 +38,9 @@ spec:
       apiFormat: {{ .Values.model.apiFormat }}
       path: {{ .Values.model.path }}
       targetModel: {{ .Values.model.name }}
+      # Set explicitly because the operator defaults it, which otherwise leaves the
+      # Application permanently OutOfSync even though the sync itself succeeded.
+      weight: {{ .Values.model.weight }}
 ---
 apiVersion: maas.opendatahub.io/v1alpha1
 kind: MaaSModelRef
