@@ -13,7 +13,6 @@ metadata:
 spec:
   backoffLimit: {{ .Values.job.backoffLimit }}
   activeDeadlineSeconds: {{ .Values.job.activeDeadlineSeconds }}
-  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
   # One provisioner at a time per user - two concurrent runs against the same
   # gateway are the obvious race, and this removes it.
   parallelism: 1

@@ -2,10 +2,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: automl-bucket-setup
+  # Versioned name so this stays run-once. Previously the Job carried a TTL, so
+  # Kubernetes deleted it on completion and ArgoCD recreated the missing resource on
+  # the next sync - on a live cluster it was recreated 44 minutes after provisioning,
+  # re-uploading the dataset every few minutes per user. Bump job.version to re-run
+  # deliberately; a fixed name plus no TTL would instead fail on Job immutability the
+  # first time the spec changed.
+  name: automl-bucket-setup-v{{ .Values.job.version }}
   namespace: {{ include "workshop.namespace" . }}
 spec:
-  ttlSecondsAfterFinished: {{ .Values.job.ttlSecondsAfterFinished }}
   backoffLimit: {{ .Values.job.backoffLimit }}
   template:
     spec:
