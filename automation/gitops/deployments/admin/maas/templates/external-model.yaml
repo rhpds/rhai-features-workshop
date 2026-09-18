@@ -31,7 +31,11 @@ metadata:
   name: {{ .Values.model.name }}
   namespace: {{ .Values.namespaces.externalModels }}
 spec:
-  targetModel: {{ .Values.model.name }}
+  # Client-facing model name: what users put in the "model" field of a request,
+  # which the lab documents as gpt-oss-120b. targetModel is NOT valid here - it
+  # belongs inside externalProviderRefs, and at the top level the API server
+  # prunes it, which left admin/maas permanently OutOfSync.
+  modelName: {{ .Values.model.name }}
   externalProviderRefs:
     - ref:
         name: {{ .Values.model.name }}
