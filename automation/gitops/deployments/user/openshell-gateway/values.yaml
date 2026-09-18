@@ -53,6 +53,17 @@ openshell:
     fsGroup: null
   securityContext:
     runAsUser: null
+  # Without these the gateway pod is BestEffort, which is the first thing evicted
+  # under node pressure - so in a full room the 5.3 sandbox exercise is what dies,
+  # and it looks random. Measured idle usage is well under these numbers; they exist
+  # to give the pod a QoS class and to make per-user capacity plannable.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
   server:
     disableTls: true
     auth:
