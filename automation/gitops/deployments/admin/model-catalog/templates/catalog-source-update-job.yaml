@@ -5,8 +5,19 @@ kind: Job
 metadata:
   name: model-catalog-sources-update
   namespace: {{ .Values.registriesNamespace }}
+  annotations:
+    # Run as a sync hook rather than a tracked resource. As a tracked resource the
+    # Job self-deleted (it carried ttlSecondsAfterFinished) and ArgoCD then compared
+    # a manifest against a resource that was intentionally gone, so admin/model-catalog
+    # sat permanently OutOfSync while reporting "successfully synced (all tasks run)".
+    # Hooks are not part of the comparison, so the status now reflects reality.
+    argocd.argoproj.io/hook: Sync
+    # Deletes the previous Job immediately before the next run. That both avoids the
+    # immutability error a static Job name would otherwise cause on re-sync, and keeps
+    # the last run around for inspection instead of vanishing after a minute - which
+    # is why ttlSecondsAfterFinished is no longer needed.
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
-  ttlSecondsAfterFinished: 60
   template:
     spec:
       restartPolicy: Never
