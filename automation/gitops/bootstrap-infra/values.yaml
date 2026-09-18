@@ -70,6 +70,15 @@ admin:
     # Pin a CSV (e.g. rhods-operator.3.5.0) for a reproducible event; empty
     # tracks the channel.
     startingCSV: ""
+  # Red Hat Agent Sandbox operator (wave -5). Provides sandboxes.agents.x-k8s.io,
+  # which the OpenShell gateway and sandbox charts (users.openshell) require. It was
+  # only ever installed by hand from templates/user/openshell/common.sh, so a fresh
+  # cluster failed module 5.3's preflight.
+  agentSandboxOperator:
+    enabled: true
+    channel: preview-0.9
+    startingCSV: ""
+
   # DSCInitialization + DataScienceCluster (wave -4). Component list lives in
   # deployments/admin/openshift-ai/values.yaml.
   openshiftAi:
@@ -144,6 +153,18 @@ users:
   # OGX / llama-stack playground + PGVector (wave 8).
   ogx:
     enabled: true
+  # OpenShell agent sandboxing for module 5.3 (waves 9 and 10).
+  #
+  # Ported from the content repo's gitops/ tree, which ArgoCD never reads - RHDP
+  # syncs this tree, so the charts had to live here to run at all.
+  #
+  # Requires the Agent Sandbox operator: admin/agent-sandbox-operator installs it,
+  # since the gateway chart depends on the CRDs and fails preflight without them.
+  openshell:
+    enabled: false
+    # Name of the demo sandbox the provisioning Job creates.
+    sandboxName: fedaura-opencode
+
   # Multi-agent mortgage application (wave 9).
   mortgageAi:
     enabled: true

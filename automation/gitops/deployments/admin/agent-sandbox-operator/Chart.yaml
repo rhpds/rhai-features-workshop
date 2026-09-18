@@ -1,0 +1,6 @@
+apiVersion: v2
+name: agent-sandbox-operator
+description: Installs the Red Hat Agent Sandbox operator, which provides the CRDs the OpenShell gateway and sandboxes need
+type: application
+version: 0.1.0
+appVersion: "preview-0.9"

@@ -1,0 +1,15 @@
+# Red Hat Agent Sandbox operator.
+#
+# Cluster-scoped, and installed imperatively by templates/user/openshell/common.sh
+# until now, so a fresh cluster had no sandboxes.agents.x-k8s.io CRD and the
+# OpenShell gateway chart failed its preflight ("Agent Sandbox is required but
+# neither v1beta1 nor v1alpha1 was found"). Module 5.3 depends on it.
+operator:
+  namespace: openshift-operators
+  name: agent-sandbox-operator
+  channel: preview-0.9
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  installPlanApproval: Automatic
+  # Pin a CSV for a reproducible event; empty tracks the channel.
+  startingCSV: ""

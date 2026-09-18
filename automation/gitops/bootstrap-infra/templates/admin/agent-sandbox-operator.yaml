@@ -1,0 +1,42 @@
+{{- if and .Values.admin.enabled .Values.admin.agentSandboxOperator.enabled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: admin-agent-sandbox-operator
+  namespace: {{ .Values.bootstrap.argoNamespace }}
+  annotations:
+    # Wave -5, next to the RHOAI operator: the OpenShell gateway (wave 9) and the
+    # sandbox Job (wave 10) both need sandboxes.agents.x-k8s.io to exist.
+    argocd.argoproj.io/sync-wave: "-5"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: {{ .Values.bootstrap.project }}
+  destination:
+    name: in-cluster
+    namespace: openshift-operators
+  source:
+    repoURL: {{ .Values.bootstrap.repoURL }}
+    targetRevision: {{ .Values.bootstrap.targetRevision }}
+    path: {{ include "bootstrap.path" (dict "ctx" . "chart" "admin/agent-sandbox-operator") }}
+    helm:
+      valuesObject:
+        operator:
+          channel: {{ .Values.admin.agentSandboxOperator.channel | quote }}
+          startingCSV: {{ .Values.admin.agentSandboxOperator.startingCSV | quote }}
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      # RHOAI CRDs may not exist yet when this first syncs.
+      - SkipDryRunOnMissingResource=true
+      - CreateNamespace=true
+    retry:
+      limit: 20
+      backoff:
+        duration: 20s
+        maxDuration: 5m
+        factor: 2
+{{- end }}

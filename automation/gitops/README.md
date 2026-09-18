@@ -19,10 +19,11 @@ automation/gitops/
 │   ├── values.yaml                  # user count, repo, cluster domain, injected credentials
 │   └── templates/
 │       ├── extra-resources/gitops.yaml   # openshift-gitops namespace + ArgoCD tuning
-│       ├── admin/*.yaml             # 11 Applications     (sync-waves -5 .. 3)
+│       ├── admin/*.yaml             # 12 Applications     (sync-waves -5 .. 3)
 │       └── user/*.yaml              # 7 ApplicationSets   (sync-waves  5 .. 9)
 └── deployments/
-    ├── admin/{openshift-ai-operator,openshift-ai,maas-install,dashboard-config,mlflow,mcp,
+    ├── admin/{agent-sandbox-operator,openshift-ai-operator,openshift-ai,maas-install,
+    │           dashboard-config,mlflow,mcp,
     │           workbench-image,model-catalog,maas,llmd,evalhub}
     ├── user/{workspace,minio,dspa,automl,model-catalog,ogx}
     └── mortgage-ai/                 # vendored multi-agent application chart
@@ -153,6 +154,7 @@ ApplicationSets grow, existing users are untouched.
 | wave | component |
 |------|-----------|
 | `-5` | `admin/openshift-ai-operator` -- RHOAI subscription; everything below needs its CRDs |
+| `-5` | `admin/agent-sandbox-operator` -- `sandboxes.agents.x-k8s.io`, required by `user/openshell*` |
 | `-4` | `admin/openshift-ai` -- `DataScienceCluster` (component set for the workshop) |
 | `-3` | `admin/maas-install` -- runs upstream `setup-maas.sh` (Kuadrant, gateway, `maas-api`) |
 | `-1` | `admin/dashboard-config` -- RHOAI dashboard feature flags |
@@ -164,7 +166,8 @@ ApplicationSets grow, existing users are untouched.
 | `6`  | `user/minio` -- object store + RHOAI data connections |
 | `7`  | `user/dspa`, `user/automl`, `user/model-catalog` (opt-in) |
 | `8`  | `user/ogx` |
-| `9`  | `user/mortgage-ai` |
+| `9`  | `user/mortgage-ai`, `user/openshell-gateway` (opt-in) |
+| `10` | `user/openshell` -- sandbox provisioning Job (opt-in) |
 
 ## Injected values (agnosticv)
 
@@ -258,7 +261,7 @@ Still driven from `templates/`, because they are not declarative cluster state:
 
 | path | why |
 |---|---|
-| `templates/user/openshell/` | shell installer + local sandbox image build |
+| `templates/user/openshell/` | the shell installer and local sandbox image build. The gateway, policies and sandbox provisioning now live in `deployments/user/openshell{,-gateway}`, so treat the scripts as the admin bootstrap path only -- editing a policy in one will not reach the other |
 | `templates/admin/global-prompts/` | registers a prompt over the MLflow REST API via `oc port-forward` |
 | `templates/admin/evalhub/eval-*.yaml`, `data/`, `*.ipynb` | EvalHub job definitions and lab content, submitted by the user during the workshop |
 | `templates/admin/custom-workbench/Containerfile` | image build input; the resulting ImageStream *is* in `admin/workbench-image` |

@@ -1,0 +1,16 @@
+# openshift-operators already exists with a global OperatorGroup, so only the
+# Subscription is needed here.
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: {{ .Values.operator.name }}
+  namespace: {{ .Values.operator.namespace }}
+spec:
+  channel: {{ .Values.operator.channel | quote }}
+  name: {{ .Values.operator.name }}
+  source: {{ .Values.operator.source }}
+  sourceNamespace: {{ .Values.operator.sourceNamespace }}
+  installPlanApproval: {{ .Values.operator.installPlanApproval }}
+  {{- with .Values.operator.startingCSV }}
+  startingCSV: {{ . | quote }}
+  {{- end }}
