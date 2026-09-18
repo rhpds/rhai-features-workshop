@@ -1,26 +1,14 @@
 name: github pages
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - 'content/**'
-      - 'default-site.yml'
-      - 'site.yml'
-      - 'package.json'
-      - '.github/workflows/gh-pages.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - 'content/**'
-      - 'default-site.yml'
-      - 'site.yml'
-      - 'package.json'
-      - '.github/workflows/gh-pages.yml'
-  workflow_dispatch:
+    paths-ignore:
+      - "README.adoc"
+      - ".gitignore"
 
 permissions:
-  contents: read
   pages: write
   id-token: write
 
@@ -34,36 +22,27 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+      - name: configure pages
+        uses: actions/configure-pages@v5
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-      # lunr is used by default-site.yml (Pages search); mermaid and tabs are the
-      # two extensions the Showroom Antora image ships, and site.yml declares them.
+          node-version: 20.13.1
       - name: install antora
-        run: |
-          npm i -g @antora/cli@3.1 @antora/site-generator@3.1 \
-            @antora/lunr-extension \
-            @sntke/antora-mermaid-extension @andrew-jones/antora-tabs-extension
-      # site.yml is the playbook Showroom renders in-cluster. Building it here
-      # keeps the lab from breaking in RHDP when only GitHub Pages was tested.
-      - name: validate showroom playbook (site.yml)
-        run: antora --fetch site.yml
+        run: npm install --global @antora/cli@3.1 @antora/site-generator@3.1
       - name: antora generate
-        run: antora --fetch default-site.yml
+        run: antora generate default-site.yml --stacktrace
       - name: upload pages artifact
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: www
   deploy:
-    if: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
     needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-    - name: deploy github pages
-      id: deployment
-      uses: actions/deploy-pages@v4
+      - name: deploy github pages
+        id: deployment
+        uses: actions/deploy-pages@v4
