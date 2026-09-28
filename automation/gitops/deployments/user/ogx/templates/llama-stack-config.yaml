@@ -4,10 +4,6 @@ kind: ConfigMap
 metadata:
   name: fed-aura-llama-stack-config
   namespace: {{ include "workshop.namespace" . }}
-  labels:
-    ogx.io/server: {{ .Values.serverName }}
-    ogx.io/watch: "true"
-    opendatahub.io/dashboard: "true"
 data:
   config.yaml: |
     version: "2"
