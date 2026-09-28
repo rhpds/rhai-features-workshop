@@ -14,7 +14,7 @@ spec:
     port: {{ .Values.server.port }}
   overrideConfig:
     key: config.yaml
-    name: fed-aura-llama-stack-config
+    name: fed-aura-ogx-config
   workload:
     overrides:
       command:

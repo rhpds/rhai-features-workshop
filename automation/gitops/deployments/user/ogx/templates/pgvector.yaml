@@ -5,7 +5,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pgvector-init-extensions
+  name: fed-aura-pgvector-init
   namespace: {{ $ns }}
 data:
   create-vector-extension.sh: |
@@ -71,7 +71,7 @@ spec:
         emptyDir: {}
       - name: init-extensions
         configMap:
-          name: pgvector-init-extensions
+          name: fed-aura-pgvector-init
 ---
 apiVersion: v1
 kind: Service
