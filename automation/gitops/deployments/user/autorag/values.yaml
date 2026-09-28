@@ -1,7 +1,7 @@
 username: user1
 namespacePrefix: wksp
 
-bucket: docs
+bucket: autorag
 region: wonderland
 evalDataFile: autorag-test-data.json
 collateralBaseUrl: https://raw.githubusercontent.com/rh-aiservices-bu/fed-aura-capital-rhai-workshop/dev/collateral
