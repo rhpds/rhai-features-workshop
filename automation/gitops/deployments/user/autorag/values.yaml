@@ -1,0 +1,16 @@
+username: user1
+namespacePrefix: wksp
+
+bucket: docs
+region: wonderland
+evalDataFile: autorag-test-data.json
+collateralBaseUrl: https://raw.githubusercontent.com/rh-aiservices-bu/fed-aura-capital-rhai-workshop/dev/collateral
+docFiles:
+  - fha.pdf
+  - internal-policies.pdf
+job:
+  image: amazon/aws-cli
+  backoffLimit: 4
+  # Bump to re-run the upload; the Job name carries it, so a new version supersedes
+  # the old Job and ArgoCD prunes the previous one.
+  version: 1

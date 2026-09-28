@@ -1,0 +1,49 @@
+{{- if and .Values.users.enabled .Values.users.autorag.enabled }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: user-autorag
+  namespace: {{ .Values.bootstrap.argoNamespace }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "7"
+spec:
+  generators:
+    - list:
+        elements:
+{{- include "bootstrap.userElements" . }}
+  template:
+    metadata:
+      name: autorag-{{ `{{ user }}` }}
+      namespace: {{ .Values.bootstrap.argoNamespace }}
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: {{ .Values.bootstrap.project }}
+      source:
+        repoURL: {{ .Values.bootstrap.repoURL }}
+        targetRevision: {{ .Values.bootstrap.targetRevision }}
+        path: {{ include "bootstrap.path" (dict "ctx" . "chart" "user/autorag") }}
+        helm:
+          values: |
+            username: {{ `{{ user }}` }}
+            namespacePrefix: {{ .Values.user.namespacePrefix }}
+      destination:
+        name: in-cluster
+        namespace: {{ .Values.user.namespacePrefix }}-{{ `{{ user }}` }}
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - SkipDryRunOnMissingResource=true
+          # The eval-data ConfigMap embeds the JSON file. Server-side apply avoids
+          # the 262144-byte last-applied-configuration annotation limit.
+          - ServerSideApply=true
+        retry:
+          limit: 20
+          backoff:
+            duration: 20s
+            maxDuration: 5m
+            factor: 2
+{{- end }}

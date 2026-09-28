@@ -1,7 +1,7 @@
 username: user1
 namespacePrefix: wksp
 
-serverName: lsd-genai-playground
+serverName: fed-aura-playground
 
 # Remote LLM / MaaS provider, injected from agnosticv (bootstrap-infra remotellm.*).
 remotellm:
@@ -36,7 +36,7 @@ embeddingDimension: 768
 # RHOAI dashboard connection secret pointing at the OGX server (used by AutoRAG).
 connection:
   enabled: true
-  name: my-ogx
+  name: fed-aura-ogx-connection
   apiKey: "REPLACE_ME"
 
 server:

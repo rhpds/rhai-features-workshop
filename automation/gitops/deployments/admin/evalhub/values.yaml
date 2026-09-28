@@ -19,6 +19,9 @@ dspa:
 secretPatcher:
   enabled: true
   image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+  # Bump to re-run the patch; the Job name carries it, so a new version supersedes
+  # the old Job and ArgoCD prunes the previous one.
+  version: 1
 # Workaround NetworkPolicy for the eval-hub-ui BFF -> evalhub API on 8443.
 uiNetworkPolicy:
   enabled: true

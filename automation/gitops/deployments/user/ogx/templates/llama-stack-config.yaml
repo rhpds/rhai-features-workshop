@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: llama-stack-config
+  name: fed-aura-llama-stack-config
   namespace: {{ include "workshop.namespace" . }}
   labels:
     ogx.io/server: {{ .Values.serverName }}
