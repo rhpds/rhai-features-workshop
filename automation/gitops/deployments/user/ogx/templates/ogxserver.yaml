@@ -7,8 +7,6 @@ metadata:
   namespace: {{ $ns }}
   annotations:
     openshift.io/display-name: {{ .Values.serverName }}
-  labels:
-    opendatahub.io/dashboard: "true"
 spec:
   distribution:
     name: rh
