@@ -17,6 +17,8 @@ connections:
     bucket: pipeline
   - name: automl
     bucket: automl
+  - name: docs
+    bucket: docs
 resources:
   requests:
     cpu: 20m

@@ -15,7 +15,7 @@ data:
 apiVersion: v1
 kind: Secret
 metadata:
-  name: genai-pgvector-credentials
+  name: fed-aura-pgvector-credentials
   namespace: {{ $ns }}
 type: Opaque
 stringData:
@@ -24,19 +24,19 @@ stringData:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: genai-pgvector
+  name: fed-aura-pgvector
   namespace: {{ $ns }}
   labels:
-    app: genai-pgvector
+    app: fed-aura-pgvector
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: genai-pgvector
+      app: fed-aura-pgvector
   template:
     metadata:
       labels:
-        app: genai-pgvector
+        app: fed-aura-pgvector
     spec:
       containers:
       - name: postgresql
@@ -52,12 +52,12 @@ spec:
         - name: POSTGRESQL_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: genai-pgvector-credentials
+              name: fed-aura-pgvector-credentials
               key: password
         - name: POSTGRESQL_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: genai-pgvector-credentials
+              name: fed-aura-pgvector-credentials
               key: password
         resources:
 {{ toYaml .Values.pgvector.resources | indent 10 }}
@@ -76,13 +76,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: genai-pgvector
+  name: fed-aura-pgvector
   namespace: {{ $ns }}
   labels:
-    app: genai-pgvector
+    app: fed-aura-pgvector
 spec:
   selector:
-    app: genai-pgvector
+    app: fed-aura-pgvector
   ports:
   - port: 5432
     targetPort: 5432
