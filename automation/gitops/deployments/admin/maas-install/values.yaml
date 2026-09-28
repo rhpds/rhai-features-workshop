@@ -21,7 +21,7 @@ job:
   # NOT provide envsubst (needed by the script's gateway templates) or git, so
   # the runner installs a small envsubst shim and fetches a tarball instead of
   # cloning.
-  image: registry.redhat.io/openshift4/ose-cli:latest
+  image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
   backoffLimit: 4
   activeDeadlineSeconds: 3600
   resources:
