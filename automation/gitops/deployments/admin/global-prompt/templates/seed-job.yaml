@@ -11,22 +11,6 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: prompt-seeder
-      initContainers:
-        - name: wait-for-mlflow-workspace
-          image: docker.io/curlimages/curl:latest
-          command: ["/bin/sh", "-c"]
-          args:
-            - |
-              echo "Waiting for MLflow workspace '{{ .Values.namespace }}' to be ready..."
-              TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
-              until curl -sk -o /dev/null -w "%{http_code}" \
-                -H "Authorization: Bearer $TOKEN" \
-                {{ .Values.mlflow.trackingUri }}/api/2.0/mlflow/experiments/list \
-                | grep -q "^200$"; do
-                echo "  Workspace not ready yet, retrying in 10s..."
-                sleep 10
-              done
-              echo "MLflow workspace is ready."
       containers:
         - name: seed
           image: {{ .Values.job.image }}
