@@ -7,17 +7,21 @@
 
 == Exercise 2: Deploy a Model on CPU
 
-Now that you've found your model in the Catalog, let's deploy it. We are going to deploy Qwen3 0.6B using vLLM as the runtime. vLLM is a high-performance inference engine for LLMs that is optimized for low latency and high throughput. It supports both CPU and GPU inference, and it can be used to deploy models in a distributed manner. In our case we'll use vLLM for CPU inference now.
+We are going to deploy Qwen3 0.6B using vLLM as the runtime. vLLM is a high-performance inference engine for LLMs that is optimized for low latency and high throughput. It supports both CPU and GPU inference, and it can be used to deploy models in a distributed manner. In our case we'll use vLLM for CPU inference now.
 
 . In the Model Catalog, select *Other Models* and click on *Qwen3 0.6B*. Click the *Deploy* button in the top right corner:
 +
 image::inference-cpu-deploy-button.png[Model card for Qwen3 0.6B with the Deploy button highlighted,link=self,window=blank,width=700]
 
-. Select your project `wksp-{user}` and click *Next*.
+. Select your project `Workspace {user}` and click *Next*.
 
 . You will be prompted for where the model lives. This information is already populated cause the catalog has the information — don't change anything, just click *Next*.
 
-. On the deployment configuration screen, keep the name as-is. Under deployment options, select *LLM inference service*. Then, under **Hardware profile**  expand `> Customize resource requests and limits` and set the resource values as shown below:
+. On the deployment configuration screen, keep the name as-is. 
+
+. Under deployment options, select *LLM inference service*.
+
+. Then, with the **Hardware profile**, as **CPU Profile**, expand `> Customize resource requests and limits` to set the resource values as shown below:
 +
 image::inference-cpu-resource-limits.png[Resource requests and limits configuration for the CPU deployment,link=self,window=blank,width=700]
 
@@ -29,14 +33,20 @@ image::inference-cpu-accelerator-config.png[Accelerator configuration showing vL
 +
 image::inference-ai-asset-endpoint.png[AI asset endpoint configuration,link=self,window=blank,width=700]
 
-. On this screen, we can add `Add custom runtime arguments` if we want to pass any additional arguments to the vLLM runtime. Let's pass `--max-model-len=2048` to limit the maximum length of the model's context window to 2048 tokens. 
+. Make sure you *unchecked* the *Token authentication* option.
 
-. We can also add `custom runtime environment variables` if we want to pass any additional environment variables to the vLLM runtime. Let's add `VLLM_CPU_KVCACHE_SPACE=8` to set the size of the key-value cache to 8GB.
+. On this screen, we can add `Add custom runtime arguments` if we want to pass any additional arguments to the vLLM runtime. 
++
+Let's pass `--max-model-len=2048` to limit the maximum length of the model's context window to 2048 tokens. 
++
+. We can also add `custom runtime environment variables` if we want to pass any additional environment variables to the vLLM runtime. 
++
+Let's add `VLLM_CPU_KVCACHE_SPACE=8` to set the size of the key-value cache to 8GB.
 +
 image::inference-custom-runtime-args-and-env-vars.png[Custom runtime arguments and environment variables,link=self,window=blank,width=700]
-
++ 
 Click **Next** and then *Deploy*.
-
++
 . Wait for the deployment to show a green status indicator. It takes a couple of minutes while the model weights are loaded:
 +
 image::inference-cpu-deployment-ready.png[Model deployment list showing Qwen3 0.6B with a green ready status,link=self,window=blank,width=700]
@@ -58,7 +68,7 @@ What is the capital of France?
 +
 You should see a response from the model, hopefully with the correct answer "Paris" 🤭
 
-. Now try shaping the model's behavior with a system prompt. On the right side of the Playground, in the *Settings*, to the *Prompt* field, enter:
+. Now try shaping the model's behavior with a system prompt. Click on the *+ New chat* on the top right first. Then, again on the right side of the Playground, under the *Settings*, to the *Prompt* field, enter:
 +
 [source,text]
 ----
@@ -81,4 +91,4 @@ Let's delete the model deployment to free up resources before the next exercise.
 
 === What's Next?
 
-You have deployed a model on a single CPU node with one replica. That works for testing, but it is just one model getting all the requests. We mayneed to scale the model for production use. But we need to do it smartly. In the next exercise, you will deploy the same model using llm-d: a distributed inference scheduler that routes requests across multiple replicas for higher throughput and lower latency under load.
+You have deployed a model on a single node with one replica. That works for testing, but it is just one model getting all the requests. We may need to scale the model for production use. But we need to do it smartly. In the next exercise, you will deploy the same model using llm-d: a distributed inference scheduler that routes requests across multiple replicas for higher throughput and lower latency under load.
