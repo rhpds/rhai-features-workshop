@@ -21,6 +21,8 @@ spec:
               value: kubernetes
             - name: MLFLOW_TRACKING_INSECURE_TLS
               value: "true"
+            - name: MLFLOW_WORKSPACE
+              value: {{ .Values.namespace | quote }}
             - name: PROMPT_NAME
               value: {{ .Values.prompt.name | quote }}
             - name: PROMPT_TEMPLATE
@@ -32,6 +34,16 @@ spec:
               export HOME=/tmp
               export PATH="/tmp/.local/bin:$PATH"
               pip install --quiet --user "mlflow[kubernetes]"
+
+              TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
+
+              echo "Waiting for MLflow to be healthy..."
+              until curl -sk {{ .Values.mlflow.trackingUri }}/api/2.0/mlflow/experiments/list \
+                | grep -qE '"experiments"|UNAUTHENTICATED'; do
+                echo "  MLflow not ready yet, retrying in 10s..."
+                sleep 10
+              done
+              echo "MLflow is up."
 
               python3 - <<'PYEOF'
               import os
