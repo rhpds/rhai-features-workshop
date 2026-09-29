@@ -11,6 +11,18 @@ spec:
     spec:
       restartPolicy: Never
       serviceAccountName: prompt-seeder
+      initContainers:
+        - name: wait-for-mlflow
+          image: docker.io/curlimages/curl:latest
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Waiting for MLflow to be ready..."
+              until curl -sk {{ .Values.mlflow.trackingUri }}/api/2.0/mlflow/experiments/list | grep -qE '"experiments"|UNAUTHENTICATED'; do
+                echo "  MLflow not ready yet, retrying in 10s..."
+                sleep 10
+              done
+              echo "MLflow is ready."
       containers:
         - name: seed
           image: {{ .Values.job.image }}
@@ -33,10 +45,7 @@ spec:
               set -e
               pip install --quiet mlflow
 
-              SA_TOKEN_PATH="/run/secrets/kubernetes.io/serviceaccount/token"
-              if [ -f "$SA_TOKEN_PATH" ]; then
-                export MLFLOW_TRACKING_TOKEN=$(cat $SA_TOKEN_PATH)
-              fi
+              export MLFLOW_TRACKING_TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
 
               python3 - <<'PYEOF'
               import os
