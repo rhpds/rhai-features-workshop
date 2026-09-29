@@ -44,7 +44,8 @@ spec:
             - |
               set -e
               export HOME=/tmp
-              pip install --quiet --user mlflow
+              export PATH="/tmp/.local/bin:$PATH"
+              pip install --quiet --user "mlflow[kubernetes]"
 
               export MLFLOW_TRACKING_TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
 
