@@ -1,0 +1,63 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Versioned name so this stays run-once. Bump job.version to re-register the prompt.
+  name: global-prompt-seed-v{{ .Values.job.version }}
+  namespace: {{ .Values.namespace }}
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: prompt-seeder
+      containers:
+        - name: seed
+          image: {{ .Values.job.image }}
+          env:
+            - name: MLFLOW_TRACKING_URI
+              value: {{ .Values.mlflow.trackingUri | quote }}
+            - name: MLFLOW_TRACKING_AUTH
+              value: kubernetes
+            - name: MLFLOW_TRACKING_INSECURE_TLS
+              value: "true"
+            - name: MLFLOW_WORKSPACE
+              value: {{ .Values.namespace | quote }}
+            - name: PROMPT_NAME
+              value: {{ .Values.prompt.name | quote }}
+            - name: PROMPT_TEMPLATE
+              value: {{ .Values.prompt.template | quote }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              pip install --quiet mlflow
+
+              SA_TOKEN_PATH="/run/secrets/kubernetes.io/serviceaccount/token"
+              if [ -f "$SA_TOKEN_PATH" ]; then
+                export MLFLOW_TRACKING_TOKEN=$(cat $SA_TOKEN_PATH)
+              fi
+
+              python3 - <<'PYEOF'
+              import os
+              import mlflow
+              import urllib3
+              urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+              mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
+
+              prompt = mlflow.genai.register_prompt(
+                  name=os.environ["PROMPT_NAME"],
+                  template=os.environ["PROMPT_TEMPLATE"],
+                  commit_message="Initial seed by bootstrap automation",
+                  tags={"source": "bootstrap", "workspace": os.environ["MLFLOW_WORKSPACE"]},
+              )
+
+              mlflow.genai.set_prompt_alias(
+                  name=os.environ["PROMPT_NAME"],
+                  alias="champion",
+                  version=prompt.version,
+              )
+
+              print(f"Registered prompt '{prompt.name}' version {prompt.version} with alias 'champion'")
+              PYEOF
