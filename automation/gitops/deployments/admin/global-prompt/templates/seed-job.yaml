@@ -43,7 +43,8 @@ spec:
           args:
             - |
               set -e
-              pip install --quiet mlflow
+              export HOME=/tmp
+              pip install --quiet --user mlflow
 
               export MLFLOW_TRACKING_TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
 
