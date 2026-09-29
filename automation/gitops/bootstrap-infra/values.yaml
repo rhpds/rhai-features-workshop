@@ -125,7 +125,7 @@ admin:
   # When enabled, user/ogx automatically registers the in-cluster endpoint as a
   # second inference provider.
   llmd:
-    enabled: false
+    enabled: true
   # EvalHub (TrustyAI) evaluation stack (wave 3).
   evalhub:
     enabled: true
