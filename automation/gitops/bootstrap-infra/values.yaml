@@ -98,6 +98,8 @@ admin:
   # RHOAI dashboard feature flags (wave -1).
   dashboardConfig:
     enabled: true
+  hardwareProfile:
+    enabled: true
   # MLflow tracking server, cluster-scoped CR (wave 0).
   mlflow:
     enabled: true
