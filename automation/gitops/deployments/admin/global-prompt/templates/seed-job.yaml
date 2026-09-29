@@ -35,23 +35,35 @@ spec:
               export PATH="/tmp/.local/bin:$PATH"
               pip install --quiet --user "mlflow[kubernetes]"
 
-              TOKEN=$(cat /run/secrets/kubernetes.io/serviceaccount/token)
-
-              echo "Waiting for MLflow to be healthy..."
-              until curl -sk {{ .Values.mlflow.trackingUri }}/api/2.0/mlflow/experiments/list \
-                | grep -qE '"experiments"|UNAUTHENTICATED'; do
-                echo "  MLflow not ready yet, retrying in 10s..."
-                sleep 10
-              done
-              echo "MLflow is up."
-
               python3 - <<'PYEOF'
               import os
+              import time
+              import ssl
+              import urllib.request
+              import urllib.error
               import mlflow
               import urllib3
               urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-              mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
+              tracking_uri = os.environ["MLFLOW_TRACKING_URI"]
+              ctx = ssl.create_default_context()
+              ctx.check_hostname = False
+              ctx.verify_mode = ssl.CERT_NONE
+
+              print("Waiting for MLflow to be healthy...")
+              while True:
+                  try:
+                      urllib.request.urlopen(f"{tracking_uri}/api/2.0/mlflow/experiments/list", context=ctx, timeout=5)
+                      break
+                  except urllib.error.HTTPError:
+                      # Any HTTP response (401, 403, etc.) means MLflow is up
+                      break
+                  except Exception:
+                      print("  MLflow not ready yet, retrying in 10s...")
+                      time.sleep(10)
+              print("MLflow is up.")
+
+              mlflow.set_tracking_uri(tracking_uri)
 
               prompt = mlflow.genai.register_prompt(
                   name=os.environ["PROMPT_NAME"],
