@@ -1,10 +1,10 @@
 namespace: global-prompts
 mlflow:
-  trackingUri: https://mlflow.redhat-ods-applications.svc.cluster.local:8443
+  trackingUri: https://mlflow.redhat-ods-applications.svc.cluster.local:8443/mlflow
 job:
   image: python:3.12-slim
   # Bump to re-register the prompt (e.g. after editing the template below).
-  version: 1
+  version: 2
 prompt:
   name: fed-aura-capital-system-prompt
   template: |

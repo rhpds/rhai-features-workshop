@@ -45,22 +45,23 @@ spec:
               import urllib3
               urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-              tracking_uri = os.environ["MLFLOW_TRACKING_URI"]
+              tracking_uri = os.environ["MLFLOW_TRACKING_URI"].rstrip("/")
               ctx = ssl.create_default_context()
               ctx.check_hostname = False
               ctx.verify_mode = ssl.CERT_NONE
 
               print("Waiting for MLflow to be healthy...")
-              while True:
+              deadline = time.monotonic() + 300
+              while time.monotonic() < deadline:
                   try:
-                      urllib.request.urlopen(f"{tracking_uri}/api/2.0/mlflow/experiments/list", context=ctx, timeout=5)
+                      with urllib.request.urlopen(f"{tracking_uri}/health", context=ctx, timeout=5):
+                          pass
                       break
-                  except urllib.error.HTTPError:
-                      # Any HTTP response (401, 403, etc.) means MLflow is up
-                      break
-                  except Exception:
-                      print("  MLflow not ready yet, retrying in 10s...")
+                  except (urllib.error.URLError, TimeoutError) as exc:
+                      print(f"  MLflow not ready yet ({exc}), retrying in 10s...")
                       time.sleep(10)
+              else:
+                  raise RuntimeError(f"MLflow did not become healthy at {tracking_uri} within 300s")
               print("MLflow is up.")
 
               mlflow.set_tracking_uri(tracking_uri)
