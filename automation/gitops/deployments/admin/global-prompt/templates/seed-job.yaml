@@ -33,8 +33,6 @@ spec:
               value: kubernetes
             - name: MLFLOW_TRACKING_INSECURE_TLS
               value: "true"
-            - name: MLFLOW_WORKSPACE
-              value: {{ .Values.namespace | quote }}
             - name: PROMPT_NAME
               value: {{ .Values.prompt.name | quote }}
             - name: PROMPT_TEMPLATE
@@ -61,7 +59,7 @@ spec:
                   name=os.environ["PROMPT_NAME"],
                   template=os.environ["PROMPT_TEMPLATE"],
                   commit_message="Initial seed by bootstrap automation",
-                  tags={"source": "bootstrap", "workspace": os.environ["MLFLOW_WORKSPACE"]},
+                  tags={"source": "bootstrap"},
               )
 
               mlflow.genai.set_prompt_alias(
