@@ -38,7 +38,7 @@ job:
 args:
   skipModels: true
   skipVerify: true
-  withObservability: false
+  withObservability: true
   # Gateway hostname. Empty lets the script default to maas.<cluster-domain>,
   # which is what content/antora.yml documents.
   maasHostname: ""
