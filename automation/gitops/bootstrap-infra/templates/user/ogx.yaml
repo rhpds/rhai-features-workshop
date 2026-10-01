@@ -33,8 +33,6 @@ spec:
               url: "{{ .Values.remotellm.url }}"
               id: "{{ .Values.remotellm.id }}"
               apiToken: "{{ .Values.remotellm.apiToken }}"
-            tinyllama:
-              enabled: {{ .Values.admin.llmd.enabled }}
       destination:
         name: in-cluster
         namespace: {{ .Values.user.namespacePrefix }}-{{ `{{ user }}` }}
