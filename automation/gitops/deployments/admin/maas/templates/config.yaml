@@ -25,4 +25,11 @@ metadata:
     ai-gateway.opendatahub.io/tenant: {{ .Values.namespaces.tenant }}
     maas.opendatahub.io/tenant-name: {{ .Values.namespaces.tenant }}
     maas.opendatahub.io/tenant-namespace: {{ .Values.namespaces.tenant }}
-spec: {}
+spec:
+  telemetry:
+    enabled: true
+    metrics:
+      captureModelUsage: true
+      captureOrganization: true
+      captureUser: true
+      captureGroup: true
