@@ -66,6 +66,7 @@ openshell:
       memory: 1Gi
   server:
     disableTls: true
+    sandboxNamespace: ""
     auth:
       # The workshop gateway is reached only from inside the user's own
       # namespace, so CLI requests are unauthenticated by design.

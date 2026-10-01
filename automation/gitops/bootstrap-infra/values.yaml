@@ -167,7 +167,7 @@ users:
   # Requires the Agent Sandbox operator: admin/agent-sandbox-operator installs it,
   # since the gateway chart depends on the CRDs and fails preflight without them.
   openshell:
-    enabled: false
+    enabled: true
     # Name of the demo sandbox the provisioning Job creates.
     sandboxName: fedaura-opencode
 
