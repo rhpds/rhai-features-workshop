@@ -94,7 +94,7 @@ admin:
     rhoaiVersion: "3.5"
     # Empty lets the script default the gateway to maas.<cluster-domain>.
     hostname: ""
-    withObservability: false
+    withObservability: true
   # RHOAI dashboard feature flags (wave -1).
   dashboardConfig:
     enabled: true
