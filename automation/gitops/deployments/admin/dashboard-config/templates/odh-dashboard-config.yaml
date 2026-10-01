@@ -71,6 +71,8 @@ spec:
     disableTracking: false
     disableTrustyBiasMetrics: false
     disableUserManagement: false
+  globalMLflowNamespaces:
+    - global-prompts
   hardwareProfileOrder: []
   notebookController:
     enabled: true
