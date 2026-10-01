@@ -11,7 +11,7 @@
 guide:
   repo: https://github.com/rh-aiservices-bu/rhoai-maas-guide
   # Pinned release. Bumping this re-runs the installer.
-  ref: rhoai3.5
+  ref: main
   # Passed as --rhoai-version. The script ignores it when RHOAI is already
   # installed (it auto-detects), which it is by this sync wave.
   rhoaiVersion: "3.5"

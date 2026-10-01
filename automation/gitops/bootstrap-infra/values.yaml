@@ -90,7 +90,7 @@ admin:
   maasInstall:
     enabled: true
     # Pinned upstream release. Bumping it re-runs the installer Job.
-    guideRef: rhoai3.5
+    guideRef: main
     rhoaiVersion: "3.5"
     # Empty lets the script default the gateway to maas.<cluster-domain>.
     hostname: ""

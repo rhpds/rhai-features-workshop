@@ -31,8 +31,8 @@ data:
     export PATH="$WORKDIR/bin:$PATH"
 
     echo "Fetching ${REPO} @ ${REF}"
-    # No git in the image, so use the release tarball.
-    curl -sSfL "${REPO}/archive/refs/tags/${REF}.tar.gz" -o "$WORKDIR/guide.tar.gz"
+    # No git in the image, so use the archive tarball (works for tags and branches).
+    curl -sSfL "${REPO}/archive/${REF}.tar.gz" -o "$WORKDIR/guide.tar.gz"
     mkdir -p "$WORKDIR/guide"
     tar -xzf "$WORKDIR/guide.tar.gz" -C "$WORKDIR/guide" --strip-components=1
     cd "$WORKDIR/guide"
