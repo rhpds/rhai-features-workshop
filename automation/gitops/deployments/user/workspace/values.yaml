@@ -22,3 +22,10 @@ remotellm:
   url: ""
   id: ""
   apiToken: ""
+
+# OpenCode IDE configuration, injected from agnosticv.
+opencode:
+  enabled: true
+  apiUrl: ""
+  apiKey: ""
+  modelName: ""
