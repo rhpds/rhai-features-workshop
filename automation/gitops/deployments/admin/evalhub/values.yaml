@@ -10,7 +10,7 @@ evalhub:
     - lm-evaluation-harness
     - ragas
 mlflow:
-  trackingUri: https://mlflow.redhat-ods-applications.svc.cluster.local:8443
+  trackingUri: https://mlflow.redhat-ods-applications.svc.cluster.local:8443/mlflow
   # EvalHub reports runs into this MLflow workspace (must match .namespace).
   workspace: evaluations
 dspa:
