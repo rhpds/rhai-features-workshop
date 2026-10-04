@@ -135,9 +135,10 @@ RAGAS is a framework that evaluates three things:
 [source,bash]
 ----
 git clone https://github.com/rh-aiservices-bu/fed-aura-capital-rhai-workshop.git
-
-(or you can ask OpenCode to clone the repo for you 🤭🤭🤭).
-
+----
++
+TIP: Or you can ask OpenCode to clone the repo for you 🤭
++
 . Go to folder `fed-aura-capital-rhai-workshop/notebooks` and open the notebook `evaluate_ragas.ipynb`:
 +
 // TODO: screenshot of evaluate_ragas.ipynb open in Workbench (evals-ragas-notebook.png)
