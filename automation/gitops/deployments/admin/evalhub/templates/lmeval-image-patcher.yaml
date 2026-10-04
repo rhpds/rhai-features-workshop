@@ -1,0 +1,89 @@
+{{- if .Values.lmEvalImagePatcher.enabled }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: patch-lmeval-provider
+  namespace: {{ .Values.dashboardNamespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: patch-lmeval-provider
+  namespace: {{ .Values.dashboardNamespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames:
+      - evalhub-provider-lm-evaluation-harness
+      - trustyai-service-operator-evalhub-provider-lm-evaluation-harness
+    verbs: ["get", "patch", "update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    resourceNames: ["evalhub"]
+    verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: patch-lmeval-provider
+  namespace: {{ .Values.dashboardNamespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: patch-lmeval-provider
+subjects:
+  - kind: ServiceAccount
+    name: patch-lmeval-provider
+    namespace: {{ .Values.dashboardNamespace }}
+---
+# One-shot Job for initial patching after ArgoCD sync.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: patch-lmeval-image-v{{ .Values.lmEvalImagePatcher.version }}
+  namespace: {{ .Values.dashboardNamespace }}
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: patch-lmeval-provider
+      restartPolicy: Never
+      containers:
+        - name: patch
+          image: {{ .Values.lmEvalImagePatcher.image }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              {{- include "lmeval-patch-script" . | nindent 14 }}
+---
+# CronJob re-applies the patch every 5 minutes in case the TrustyAI operator
+# reverts the configmap. Only patches when the image differs — no EvalHub
+# restart needed since the image ref is read at job-pod creation time, not
+# at EvalHub startup.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: patch-lmeval-image-enforcer
+  namespace: {{ .Values.dashboardNamespace }}
+spec:
+  schedule: "*/5 * * * *"
+  concurrencyPolicy: Replace
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          serviceAccountName: patch-lmeval-provider
+          restartPolicy: Never
+          containers:
+            - name: patch
+              image: {{ .Values.lmEvalImagePatcher.image }}
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  {{- include "lmeval-patch-script" . | nindent 18 }}
+{{- end }}

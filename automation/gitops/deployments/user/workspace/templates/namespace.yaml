@@ -5,6 +5,7 @@ metadata:
   name: {{ include "workshop.namespace" . }}
   labels:
     opendatahub.io/dashboard: {{ .Values.dashboardLabel | quote }}
+    opendatahub.io/generated-namespace: "true"
     app.kubernetes.io/component: workshop-namespace
     evalhub.trustyai.opendatahub.io/tenant: "true"
   annotations:

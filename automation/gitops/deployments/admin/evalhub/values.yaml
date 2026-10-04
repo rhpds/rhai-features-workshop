@@ -22,6 +22,12 @@ secretPatcher:
   # Bump to re-run the patch; the Job name carries it, so a new version supersedes
   # the old Job and ArgoCD prunes the previous one.
   version: 1
+lmEvalImagePatcher:
+  enabled: true
+  image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+  # Custom adapter image with chat-completions support for MaaS endpoints.
+  adapterImage: quay.io/rh-aiservices-bu/ta-lmes-job:custom-v6
+  version: 1
 # Workaround NetworkPolicy for the eval-hub-ui BFF -> evalhub API on 8443.
 uiNetworkPolicy:
   enabled: true
