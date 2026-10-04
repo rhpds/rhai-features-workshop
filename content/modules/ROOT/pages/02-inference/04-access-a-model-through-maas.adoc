@@ -211,6 +211,8 @@ Most AI coding assistants default to cloud-hosted models — sending your code t
 
 This exercise uses *OpenCode*, an open-source AI coding assistant built into the workbench, connected to the {company_name} MaaS endpoint — coding assistance powered by a self-hosted model, with no code leaving the cluster.
 
+By pointing OpenCode at MaaS, you ensure that your code and prompts stay within your data center — they are never sent to a third-party model provider. But a capable coding agent can do more than just generate code: it can access files, call APIs, and interact with endpoints. Keeping the model on-premises is one half of the story. In the xref:05-security/03-openshell.adoc[OpenShell Agent Sandboxing] section, you will see the other half: how to constrain _what the agent can do_ — blocking network access to external endpoints, preventing data uploads, and ensuring the agent cannot take actions it is not supposed to.
+
 . Navigate to *OpenShift AI Dashboard > Data Science Projects > wksp-{user}*. Click *Create workbench* and fill in the form:
 +
 image::inference-workbench-create-codeserver.png[Create workbench in your project,link=self,window=blank,width=700]
