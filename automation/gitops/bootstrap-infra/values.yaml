@@ -152,6 +152,8 @@ users:
     enabled: true
   autorag:
     enabled: true
+  ragas:
+    enabled: true
   # vLLM CPU model serving per user (wave 7). One pod per enabled model per user
   # (4-8 cores, 8-16Gi each) -- keep off unless the cluster is sized for it.
   modelCatalog:
