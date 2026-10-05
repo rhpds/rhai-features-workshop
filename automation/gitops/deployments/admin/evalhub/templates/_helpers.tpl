@@ -38,12 +38,10 @@ for CM in evalhub-provider-lm-evaluation-harness trustyai-service-operator-evalh
   YAML=$(oc get configmap "$CM" -n {{ .Values.dashboardNamespace }} -o jsonpath='{.data.lm_evaluation_harness\.yaml}')
   PATCHED=$(echo "$YAML" | sed "s|image:.*|image: ${CUSTOM_IMAGE}|g")
 
-  TMPFILE=$(mktemp)
-  echo "$PATCHED" > "$TMPFILE"
-  oc create configmap "$CM" -n {{ .Values.dashboardNamespace }} \
-    --from-file="lm_evaluation_harness.yaml=$TMPFILE" \
-    --dry-run=client -o yaml | oc replace -f -
-  rm "$TMPFILE"
+  # Use oc patch to avoid ownerReference permission issues with oc replace
+  ESCAPED=$(echo "$PATCHED" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')
+  oc patch configmap "$CM" -n {{ .Values.dashboardNamespace }} \
+    --type=merge -p "{\"data\":{\"lm_evaluation_harness.yaml\":${ESCAPED}}}"
 
   oc annotate configmap "$CM" -n {{ .Values.dashboardNamespace }} \
     opendatahub.io/managed='false' --overwrite
