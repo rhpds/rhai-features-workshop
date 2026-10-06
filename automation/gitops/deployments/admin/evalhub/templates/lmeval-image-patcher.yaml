@@ -16,6 +16,8 @@ rules:
     resourceNames:
       - evalhub-provider-lm-evaluation-harness
       - trustyai-service-operator-evalhub-provider-lm-evaluation-harness
+      - evalhub-provider-ragas
+      - trustyai-service-operator-evalhub-provider-ragas
     verbs: ["get", "patch", "update"]
   - apiGroups: ["apps"]
     resources: ["deployments"]
