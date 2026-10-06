@@ -28,8 +28,9 @@ patch_configmap() {
     return
   fi
 
-  CURRENT_IMAGE=$(oc get configmap "$CM" -n {{ .Values.dashboardNamespace }} \
-    -o jsonpath="{.data.${DATA_KEY}}" | grep 'image:' | awk '{print $2}')
+  CURRENT_IMAGE=$(oc get configmap "$CM" -n {{ .Values.dashboardNamespace }} -o json \
+    | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data'].get('$DATA_KEY',''))" \
+    | grep 'image:' | awk '{print $2}')
 
   if [ "$CURRENT_IMAGE" = "$DESIRED_IMAGE" ]; then
     echo "Configmap $CM already has correct image, skipping"
@@ -37,12 +38,24 @@ patch_configmap() {
   fi
 
   echo "Patching $CM: $CURRENT_IMAGE -> $DESIRED_IMAGE"
-  YAML=$(oc get configmap "$CM" -n {{ .Values.dashboardNamespace }} -o jsonpath="{.data.${DATA_KEY}}")
-  PATCHED=$(echo "$YAML" | sed "s|image:.*|image: ${DESIRED_IMAGE}|g")
 
-  ESCAPED=$(echo "$PATCHED" | python3 -c 'import sys,json; print(json.dumps(sys.stdin.read()))')
+  # Use python3 to safely build the JSON patch and write to a temp file
+  oc get configmap "$CM" -n {{ .Values.dashboardNamespace }} -o json \
+    | python3 -c "
+import sys, json
+d = json.load(sys.stdin)
+key = '$DATA_KEY'
+yaml_str = d['data'][key]
+yaml_str = yaml_str.split('\n')
+yaml_str = [l.replace(l.split('image:')[1].strip(), '$DESIRED_IMAGE') if 'image:' in l else l for l in yaml_str]
+patched = '\n'.join(yaml_str)
+patch = {'data': {key: patched}}
+with open('/tmp/cm-patch.json', 'w') as f:
+    json.dump(patch, f)
+"
+
   oc patch configmap "$CM" -n {{ .Values.dashboardNamespace }} \
-    --type=merge -p "{\"data\":{\"${DATA_KEY}\":${ESCAPED}}}"
+    --type=merge --patch-file /tmp/cm-patch.json
 
   oc annotate configmap "$CM" -n {{ .Values.dashboardNamespace }} \
     opendatahub.io/managed='false' --overwrite
@@ -53,12 +66,12 @@ patch_configmap() {
 
 # Patch lm-evaluation-harness configmaps
 for CM in evalhub-provider-lm-evaluation-harness trustyai-service-operator-evalhub-provider-lm-evaluation-harness; do
-  patch_configmap "$CM" "lm_evaluation_harness\.yaml" "$LMEVAL_IMAGE"
+  patch_configmap "$CM" "lm_evaluation_harness.yaml" "$LMEVAL_IMAGE"
 done
 
 # Patch ragas configmaps
 for CM in evalhub-provider-ragas trustyai-service-operator-evalhub-provider-ragas; do
-  patch_configmap "$CM" "ragas\.yaml" "$RAGAS_IMAGE"
+  patch_configmap "$CM" "ragas.yaml" "$RAGAS_IMAGE"
 done
 
 if [ "$CHANGED" = "true" ]; then

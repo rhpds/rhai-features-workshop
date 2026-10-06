@@ -29,7 +29,7 @@ lmEvalImagePatcher:
   adapterImage: quay.io/rh-aiservices-bu/ta-lmes-job:custom-v6
   # RAGAS adapter image — v0.5.0 has EvalHubOpenAILLM/InstructorLLM incompatibility.
   ragasImage: quay.io/evalhub/community-ragas:latest
-  version: 2
+  version: 3
 # Workaround NetworkPolicy for the eval-hub-ui BFF -> evalhub API on 8443.
 uiNetworkPolicy:
   enabled: true
