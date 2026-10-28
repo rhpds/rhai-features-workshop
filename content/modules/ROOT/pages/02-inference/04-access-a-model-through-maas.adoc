@@ -26,11 +26,17 @@ image::inference-maas-asset-endpoints.png[AI Asset Endpoints list showing availa
 +
 image::inference-maas-endpoint-details.png[AI Asset Endpoint details,link=self,window=blank,width=700]
 
-. On the endpoint detail page, click *Try in Playground* to confirm the endpoint is live and responding. The Playground creates a temporary API key on your behalf and connects to the endpoint so you can test it quickly. (Try refreshing the page if the Playground is not showing up.)
+. Close the dialog and click *Add to playground* to confirm the endpoint is live and responding. The Playground creates a temporary API key on your behalf and connects to the endpoint so you can test it quickly.
++
+TIP: If the Playground does not show up, refresh the page.
+
+. In the *Configure playground* dialog, pick which model endpoints you want available in your project playground. Keep `qwen3-235b-a22b` selected and click *Configure*.
++
+image::inference-maas-configure-playground.png[Configure playground dialog with qwen3-235b-a22b selected and the Configure button,link=self,window=blank,width=700]
 
 . Send a prompt of your choice and confirm you get a response. Notice the quality of the response compared to what you saw from Qwen3 0.6B. This is a 235-billion parameter model running on GPU, much bigger and more powerful.
 +
-image::inference-maas-try-in-playground.png[GenAI Playground opened from the qwen3-235b-a22b endpoint detail page,link=self,window=blank,width=700]
+image::inference-maas-try-in-playground.png[GenAI Playground opened from the qwen3-235b-a22b endpoint,link=self,window=blank,width=700]
 
 == Exercise 5: Generate an API Key
 
