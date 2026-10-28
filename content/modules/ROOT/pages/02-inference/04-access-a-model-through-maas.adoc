@@ -22,7 +22,7 @@ MaaS provides a consistent and governed way to access models, which means {compa
 +
 image::inference-maas-asset-endpoints.png[AI Asset Endpoints list showing available endpoints,link=self,window=blank,width=700]
 
-. Click on *View* to view its details — the endpoint URL, the underlying model, and the subscription configured for it.
+. Click on *View* to view its details: the endpoint URL, the underlying model, and the subscription configured for it.
 +
 image::inference-maas-endpoint-details.png[AI Asset Endpoint details,link=self,window=blank,width=700]
 
@@ -206,17 +206,17 @@ curl -sk $MAAS_URL/v1/chat/completions \
   }' | jq -r '.choices[0].message.content'
 ----
 +
-You should see a response from `qwen3-235b-a22b`. The API is OpenAI-compatible — any application that already talks to OpenAI can point at this endpoint instead, with no code changes beyond swapping the base URL and key.
+You should see a response from `qwen3-235b-a22b`. The API is OpenAI-compatible, so any application that already talks to OpenAI can point at this endpoint instead, with no code changes beyond swapping the base URL and key.
 
 == Exercise 7: (Optional) Use OpenCode with MaaS as Your Coding Assistant
 
 Let's explore another use case apart from {assistant_name}: using MaaS as a coding assistant.
 
-Most AI coding assistants default to cloud-hosted models — sending your code to an external provider. In a regulated environment like financial services, that's often not acceptable. But because MaaS exposes an OpenAI-compatible API, you are not locked into any particular tool or model: any coding assistant that supports a custom endpoint works. You can swap the model behind it — a smaller, faster model for autocomplete, a larger one for complex reasoning — without changing your tooling.
+Most AI coding assistants default to cloud-hosted models, sending your code to an external provider. In a regulated environment like financial services, that's often not acceptable. But because MaaS exposes an OpenAI-compatible API, you are not locked into any particular tool or model: any coding assistant that supports a custom endpoint works. You can swap the model behind it (a smaller, faster model for autocomplete, a larger one for complex reasoning) without changing your tooling.
 
-This exercise uses *OpenCode*, an open-source AI coding assistant built into the workbench, connected to the {company_name} MaaS endpoint — coding assistance powered by a self-hosted model, with no code leaving the cluster.
+This exercise uses *OpenCode*, an open-source AI coding assistant built into the workbench, connected to the {company_name} MaaS endpoint: coding assistance powered by a self-hosted model, with no code leaving the cluster.
 
-By pointing OpenCode at MaaS, you ensure that your code and prompts stay within your data center — they are never sent to a third-party model provider. But a capable coding agent can do more than just generate code: it can access files, call APIs, and interact with endpoints. Keeping the model on-premises is one half of the story. In the xref:05-security/03-openshell.adoc[OpenShell Agent Sandboxing] section, you will see the other half: how to constrain _what the agent can do_ — blocking network access to external endpoints, preventing data uploads, and ensuring the agent cannot take actions it is not supposed to.
+By pointing OpenCode at MaaS, you ensure that your code and prompts stay within your data center: they are never sent to a third-party model provider. But a capable coding agent can do more than just generate code: it can access files, call APIs, and interact with endpoints. Keeping the model on-premises is one half of the story. In the xref:05-security/03-openshell.adoc[OpenShell Agent Sandboxing] section, you will see the other half: how to constrain _what the agent can do_: blocking network access to external endpoints, preventing data uploads, and ensuring the agent cannot take actions it is not supposed to.
 
 . Navigate to *OpenShift AI Dashboard > Data Science Projects > wksp-{user}*. Click *Create workbench* and fill in the form:
 +
@@ -470,7 +470,7 @@ Before we close this section, in the Playground, try asking something specific a
 What is Fed Aura Capital's minimum credit score requirement for a conventional loan?
 ----
 
-Observe the response. `qwen3-235b-a22b` is a powerful general-purpose model, but it has no knowledge of {company_name}'s specific policies. Without access to the company's knowledge base, it can only give a generic answer — or make one up.
+Observe the response. `qwen3-235b-a22b` is a powerful general-purpose model, but it has no knowledge of {company_name}'s specific policies. Without access to the company's knowledge base, it can only give a generic answer, or make one up.
 
 *Next steps:*
 
@@ -480,13 +480,13 @@ The model can generate fluent text, but it doesn't know anything about {company_
 
 You started with a model in a catalog and ended with a production-grade inference platform. Here is what that progression looked like:
 
-* *Model Catalog* — models don't just appear in production. They go through a governed library with metadata about origin, license, and validation status before anyone can deploy them.
-* *Single-node vLLM* — deploying a model is straightforward, but a single replica under concurrent load becomes a bottleneck with no intelligent routing.
-* *llm-d* — adding replicas only helps if requests are routed smartly. llm-d tracks replica load and distributes work to minimize wait time across the pool. The API and the user experience stay identical — the improvement is entirely under the hood.
-* *Models as a Service* — even well-distributed inference creates chaos if every team manages their own stack. MaaS puts a shared gateway in front: one endpoint, scoped API keys, rate limits, and usage visibility per consumer.
+* *Model Catalog* - models don't just appear in production. They go through a governed library with metadata about origin, license, and validation status before anyone can deploy them.
+* *Single-node vLLM* - deploying a model is straightforward, but a single replica under concurrent load becomes a bottleneck with no intelligent routing.
+* *llm-d* - adding replicas only helps if requests are routed smartly. llm-d tracks replica load and distributes work to minimize wait time across the pool. The API and the user experience stay identical. The improvement is entirely under the hood.
+* *Models as a Service* - even well-distributed inference creates chaos if every team manages their own stack. MaaS puts a shared gateway in front: one endpoint, scoped API keys, rate limits, and usage visibility per consumer.
 
 *Key takeaway:*
 
 Each layer solved a real problem the previous one left open. The result is not just a running model, it is a platform that scales, governs access, and gives the platform team observability over who uses what.
 
-NOTE: Want to understand how MaaS is configured under the hood — the Kubernetes custom resources, subscription model, and auth policy chain? See the optional xref:02-inference/05-maas-configuration.adoc[2.5 MaaS Configuration] page.
+NOTE: Want to understand how MaaS is configured under the hood (the Kubernetes custom resources, subscription model, and auth policy chain)? See the optional xref:02-inference/05-maas-configuration.adoc[2.5 MaaS Configuration] page.

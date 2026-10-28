@@ -204,7 +204,7 @@ From the outside, the conversation looks simple: you typed a question and {assis
 .{company_name} AI platform architecture
 image::fed-aura-platform-architecture.svg[Diagram showing {assistant_name} connected to persona agents, self-hosted models, MCP tools, a RAG vector database, MLflow observability, and platform security layers,align=center]
 +
-The platform is built around a set of cooperating components. At the center is {assistant_name} — a set of persona-specific agents orchestrated with LangGraph and powered by self-hosted models served through vLLM. Each agent has access to domain knowledge via RAG, can call real tools via MCP, and is observable through MLflow tracing. All inference goes through the MaaS gateway, which enforces access control and usage metering. NeMo Guardrails filter inputs and outputs at the boundary. OpenShell sandboxes agent execution with deny-by-default policies.
+The platform is built around a set of cooperating components. At the center is {assistant_name}, a set of persona-specific agents orchestrated with LangGraph and powered by self-hosted models served through vLLM. Each agent has access to domain knowledge via RAG, can call real tools via MCP, and is observable through MLflow tracing. All inference goes through the MaaS gateway, which enforces access control and usage metering. NeMo Guardrails filter inputs and outputs at the boundary. OpenShell sandboxes agent execution with deny-by-default policies.
 
 . Return to the **Terminal** tab. List all running pods and match them to what you just saw in the diagram:
 +

@@ -37,9 +37,9 @@ image::inference-model-catalog-overview.png[Model Catalog showing available mode
 
 . Click on any model to open its model card. Notice what information is available:
 +
-** *Description and tags* — what the model is for, its size, and its architecture
-** *License and documentation* — the terms under which you can use and distribute the model
-** *Performance insights* — Red Hat benchmarks this model on different hardware across common use cases such as chatbot, code generation, and document summarization, so you can compare expected throughput and latency before committing to a deployment
+** *Description and tags* - what the model is for, its size, and its architecture
+** *License and documentation* - the terms under which you can use and distribute the model
+** *Performance insights* - Red Hat benchmarks this model on different hardware across common use cases such as chatbot, code generation, and document summarization, so you can compare expected throughput and latency before committing to a deployment
 ** *Safety and security insights* - Red Hat tests models for known vulnerabilities, adversarial robustness, and safety issues
 +
 image::inference-model-card-detail.png[Model card showing description, license, and performance benchmarks,link=self,window=blank,width=700]
