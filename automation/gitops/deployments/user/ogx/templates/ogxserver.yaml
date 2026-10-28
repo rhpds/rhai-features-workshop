@@ -7,8 +7,6 @@ metadata:
   namespace: {{ $ns }}
   annotations:
     openshift.io/display-name: {{ .Values.serverName }}
-  labels:
-    opendatahub.io/dashboard: "true"
 spec:
   distribution:
     name: rh
@@ -16,7 +14,7 @@ spec:
     port: {{ .Values.server.port }}
   overrideConfig:
     key: config.yaml
-    name: llama-stack-config
+    name: fed-aura-ogx-config
   workload:
     overrides:
       command:
@@ -30,14 +28,8 @@ spec:
         value: ~/.llama/faiss
       - name: SENTENCE_TRANSFORMERS_HOME
         value: /opt/app-root/.cache/huggingface/hub
-      - name: HF_HUB_OFFLINE
-        value: "1"
-      - name: TRANSFORMERS_OFFLINE
-        value: "1"
-      - name: HF_DATASETS_OFFLINE
-        value: "1"
       - name: PGVECTOR_HOST
-        value: genai-pgvector.{{ $ns }}.svc.cluster.local
+        value: fed-aura-pgvector.{{ $ns }}.svc.cluster.local
       - name: PGVECTOR_PORT
         value: "5432"
       - name: PGVECTOR_DB
@@ -48,7 +40,7 @@ spec:
         valueFrom:
           secretKeyRef:
             key: password
-            name: genai-pgvector-credentials
+            name: fed-aura-pgvector-credentials
       - name: OGX_CONFIG_DIR
         value: /opt/app-root/src/.ogx/distributions/rh/
       - name: LITEMAAS_API_TOKEN

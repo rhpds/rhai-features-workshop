@@ -1,6 +1,6 @@
 image:
   repository: quay.io/rh-aiservices-bu/fedaura-codeserver
-  tag: "1.3"
+  tag: "1.4"
 # Pre-pulls the workbench image onto every node so the first workbench start is
 # fast. Off by default: KubernetesImagePuller is a che.eclipse.org CRD provided by
 # the DevWorkspace/Che operator, which RHOAI does not install - the workbenches DSC

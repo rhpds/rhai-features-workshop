@@ -1,6 +1,6 @@
 # MLflow tracking server for RHOAI.
 # Cluster-scoped CR -- the operator creates pods/services in redhat-ods-applications.
-# Service endpoint: https://mlflow.redhat-ods-applications.svc.cluster.local:8443
+# Service endpoint: https://mlflow.redhat-ods-applications.svc.cluster.local:8443/mlflow
 ---
 apiVersion: mlflow.opendatahub.io/v1
 kind: MLflow

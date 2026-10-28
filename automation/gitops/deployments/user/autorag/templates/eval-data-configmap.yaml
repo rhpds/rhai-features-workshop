@@ -1,0 +1,12 @@
+---
+# Evaluation dataset shipped with the chart and uploaded to MinIO by the setup Job.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: autorag-eval-data
+  namespace: {{ include "workshop.namespace" . }}
+  labels:
+    app: autorag
+data:
+  {{ .Values.evalDataFile }}: |-
+{{ .Files.Get (printf "files/%s" .Values.evalDataFile) | indent 4 }}

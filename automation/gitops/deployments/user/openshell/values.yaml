@@ -25,7 +25,7 @@ gateway:
 
 # Image for the Job. Contains openshell, kubectl, oc and python3.
 job:
-  image: quay.io/rh-aiservices-bu/fedaura-codeserver:1.3
+  image: quay.io/rh-aiservices-bu/fedaura-codeserver:1.4
   backoffLimit: 6
   activeDeadlineSeconds: 1800
   # No TTL: the name already carries sandbox.provisionVersion, so the Job is

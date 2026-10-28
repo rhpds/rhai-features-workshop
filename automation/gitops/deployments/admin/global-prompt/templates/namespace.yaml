@@ -4,4 +4,5 @@ kind: Namespace
 metadata:
   name: {{ .Values.namespace }}
   labels:
+    opendatahub.io/global-mlflow-workspace: mlflow
     opendatahub.io/dashboard: "true"

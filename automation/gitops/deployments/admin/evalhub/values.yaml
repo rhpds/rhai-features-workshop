@@ -10,7 +10,7 @@ evalhub:
     - lm-evaluation-harness
     - ragas
 mlflow:
-  trackingUri: https://mlflow.redhat-ods-applications.svc.cluster.local:8443
+  trackingUri: https://mlflow.redhat-ods-applications.svc.cluster.local:8443/mlflow
   # EvalHub reports runs into this MLflow workspace (must match .namespace).
   workspace: evaluations
 dspa:
@@ -18,7 +18,18 @@ dspa:
   minioImage: quay.io/opendatahub/minio:RELEASE.2019-08-14T20-37-41Z-license-compliance
 secretPatcher:
   enabled: true
-  image: registry.redhat.io/openshift4/ose-cli:latest
+  image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+  # Bump to re-run the patch; the Job name carries it, so a new version supersedes
+  # the old Job and ArgoCD prunes the previous one.
+  version: 1
+lmEvalImagePatcher:
+  enabled: true
+  image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+  # Custom adapter image with chat-completions support for MaaS endpoints.
+  adapterImage: quay.io/rh-aiservices-bu/ta-lmes-job:custom-v6
+  # RAGAS adapter image — v0.5.0 has EvalHubOpenAILLM/InstructorLLM incompatibility.
+  ragasImage: quay.io/evalhub/community-ragas:latest
+  version: 4
 # Workaround NetworkPolicy for the eval-hub-ui BFF -> evalhub API on 8443.
 uiNetworkPolicy:
   enabled: true

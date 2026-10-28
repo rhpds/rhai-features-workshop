@@ -1,0 +1,78 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Versioned name so this stays run-once. Bump job.version to re-run deliberately.
+  name: autorag-docs-setup-v{{ .Values.job.version }}
+  namespace: {{ include "workshop.namespace" . }}
+spec:
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: eval-data
+          configMap:
+            name: autorag-eval-data
+        - name: shared-docs
+          emptyDir: {}
+      initContainers:
+        - name: download-docs
+          image: docker.io/curlimages/curl:latest
+          volumeMounts:
+            - name: shared-docs
+              mountPath: /docs
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              {{- range .Values.docFiles }}
+              echo "Downloading {{ . }}..."
+              curl -fsSL {{ $.Values.collateralBaseUrl }}/{{ . }} -o /docs/{{ . }}
+              {{- end }}
+              echo "All docs downloaded."
+      containers:
+        - name: setup
+          image: {{ .Values.job.image }}
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: minio_root_user
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: minio_root_password
+            - name: AWS_DEFAULT_REGION
+              value: {{ .Values.region }}
+            - name: AWS_S3_ENDPOINT
+              value: http://minio-service.{{ include "workshop.namespace" . }}.svc.cluster.local:9000
+          volumeMounts:
+            - name: shared-docs
+              mountPath: /docs
+              readOnly: true
+            - name: eval-data
+              mountPath: /data
+              readOnly: true
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Waiting for MinIO..."
+              until aws s3 ls --endpoint-url $AWS_S3_ENDPOINT > /dev/null 2>&1; do
+                sleep 3
+              done
+
+              aws s3 mb s3://{{ .Values.bucket }} --endpoint-url $AWS_S3_ENDPOINT || true
+              echo "Bucket '{{ .Values.bucket }}' ready."
+
+              {{- range .Values.docFiles }}
+              aws s3 cp /docs/{{ . }} s3://{{ $.Values.bucket }}/docs/{{ . }} \
+                --endpoint-url $AWS_S3_ENDPOINT
+              echo "Uploaded {{ . }} to {{ $.Values.bucket }}/docs/."
+              {{- end }}
+
+              aws s3 cp /data/{{ .Values.evalDataFile }} s3://{{ .Values.bucket }}/{{ .Values.evalDataFile }} \
+                --endpoint-url $AWS_S3_ENDPOINT
+              echo "Uploaded {{ .Values.evalDataFile }} to {{ .Values.bucket }} bucket."

@@ -1,0 +1,83 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # Versioned name so this stays run-once. Bump job.version to re-register the prompt.
+  name: global-prompt-seed-v{{ .Values.job.version }}
+  namespace: {{ .Values.namespace }}
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      serviceAccountName: prompt-seeder
+      containers:
+        - name: seed
+          image: {{ .Values.job.image }}
+          env:
+            - name: MLFLOW_TRACKING_URI
+              value: {{ .Values.mlflow.trackingUri | quote }}
+            - name: MLFLOW_TRACKING_AUTH
+              value: kubernetes
+            - name: MLFLOW_TRACKING_INSECURE_TLS
+              value: "true"
+            - name: MLFLOW_WORKSPACE
+              value: {{ .Values.namespace | quote }}
+            - name: PROMPT_NAME
+              value: {{ .Values.prompt.name | quote }}
+            - name: PROMPT_TEMPLATE
+              value: {{ .Values.prompt.template | quote }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              export HOME=/tmp
+              export PATH="/tmp/.local/bin:$PATH"
+              pip install --quiet --user "mlflow[kubernetes]"
+
+              python3 - <<'PYEOF'
+              import os
+              import time
+              import ssl
+              import urllib.request
+              import urllib.error
+              import mlflow
+              import urllib3
+              urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+              tracking_uri = os.environ["MLFLOW_TRACKING_URI"].rstrip("/")
+              ctx = ssl.create_default_context()
+              ctx.check_hostname = False
+              ctx.verify_mode = ssl.CERT_NONE
+
+              print("Waiting for MLflow to be healthy...")
+              deadline = time.monotonic() + 300
+              while time.monotonic() < deadline:
+                  try:
+                      with urllib.request.urlopen(f"{tracking_uri}/health", context=ctx, timeout=5):
+                          pass
+                      break
+                  except (urllib.error.URLError, TimeoutError) as exc:
+                      print(f"  MLflow not ready yet ({exc}), retrying in 10s...")
+                      time.sleep(10)
+              else:
+                  raise RuntimeError(f"MLflow did not become healthy at {tracking_uri} within 300s")
+              print("MLflow is up.")
+
+              mlflow.set_tracking_uri(tracking_uri)
+
+              prompt = mlflow.genai.register_prompt(
+                  name=os.environ["PROMPT_NAME"],
+                  template=os.environ["PROMPT_TEMPLATE"],
+                  commit_message="Initial seed by bootstrap automation",
+                  tags={"source": "bootstrap"},
+              )
+
+              mlflow.genai.set_prompt_alias(
+                  name=os.environ["PROMPT_NAME"],
+                  alias="champion",
+                  version=prompt.version,
+              )
+
+              print(f"Registered prompt '{prompt.name}' version {prompt.version} with alias 'champion'")
+              PYEOF

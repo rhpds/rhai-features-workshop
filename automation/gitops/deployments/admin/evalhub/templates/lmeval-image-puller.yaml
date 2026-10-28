@@ -1,0 +1,42 @@
+{{- if .Values.lmEvalImagePatcher.enabled }}
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: lmeval-image-puller
+  namespace: {{ .Values.dashboardNamespace }}
+  labels:
+    app: lmeval-image-puller
+spec:
+  selector:
+    matchLabels:
+      app: lmeval-image-puller
+  template:
+    metadata:
+      labels:
+        app: lmeval-image-puller
+    spec:
+      initContainers:
+        - name: pull
+          image: {{ .Values.lmEvalImagePatcher.adapterImage }}
+          command: ["/bin/sh", "-c", "echo 'Image pulled successfully'"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 10m
+              memory: 16Mi
+      containers:
+        - name: pause
+          image: registry.access.redhat.com/ubi9/ubi-micro:latest
+          command: ["/bin/sh", "-c", "sleep infinity"]
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 10m
+              memory: 16Mi
+      tolerations:
+        - operator: Exists
+{{- end }}
