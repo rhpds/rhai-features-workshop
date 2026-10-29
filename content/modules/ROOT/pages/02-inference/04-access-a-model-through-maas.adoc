@@ -46,9 +46,11 @@ To consume a MaaS endpoint from code or a tool, you need a scoped API key. Let's
 
 . Give the key a name, for example `my-key`. You can add a description if you wish.
 
-. Select a subscription available to you. The subscription defines the model you have access to and the rate limits for the key. Observe that you have 10,000 tokens per hour as the rate limit for `qwen3-235b-a22b`. 
+. Select the *Premium Tier* subscription. The subscription defines the model you have access to and the rate limits for the key. Observe that you have 10,000 tokens per minute as the rate limit for `qwen3-235b-a22b`. 
 
 . Leave the Expiration as 30 days. Click *Create API Key*.
++
+image::inference-maas-create-api-key.png[Create API key dialog showing the Premium Tier subscription, the models it covers, and a 30 day expiration,link=self,window=blank,width=700]
 
 . Save the generated key somewhere safe. You will need it to call the endpoint from code or a tool. And you'll only get to see it once.
 +
@@ -103,7 +105,7 @@ Paste it here so you can refer to it during the exercises. It stays in your brow
 --
 
 +
-image::inference-maas-api-key.png[API key generation dialog showing tier selection and generated key,link=self,window=blank,width=700]
+image::inference-maas-api-key.png[API key created dialog showing the masked key, its name, subscription, and expiration,link=self,window=blank,width=700]
 +
 NOTE: Each user generates their own key. The MaaS gateway tracks usage per key, which is how the platform enforces rate limits and produces the per-user usage data.
 
@@ -145,8 +147,7 @@ With your key in hand, let's call the model directly from the terminal.
     transition: opacity 0.2s;
   }
   .maas-env-btn:hover { opacity: 1; }
-  #maas-copy-btn { right: 3rem; }
-  #maas-send-btn { right: 0.5rem; }
+  #maas-copy-btn { right: 0.5rem; }
 </style>
 <div class="listingblock maas-env-wrap">
   <div class="maas-env-block" id="maas-env-block"><span class="maas-env-key">export MAAS_API_KEY=</span><span id="maas-key-display" class="maas-env-placeholder">&lt;paste-your-api-key&gt;</span>
@@ -158,16 +159,6 @@ With your key in hand, let's call the model directly from the terminal.
       b.textContent = '✓'; setTimeout(function(){ b.textContent = '⎘'; }, 1500);
     });
   })()">⎘</button>
-  <button class="maas-env-btn" id="maas-send-btn" title="Send to terminal" onclick="(function(){
-    var text = document.getElementById('maas-env-block').innerText.trim();
-    var frames = window.parent ? window.parent.document.querySelectorAll('iframe') : [];
-    var frame = null;
-    for (var i=0;i<frames.length;i++){if((frames[i].src||'').indexOf('/terminal')!==-1){frame=frames[i];break;}}
-    if(!frame){alert('Terminal tab not found.');return;}
-    try{frame.contentWindow.postMessage({type:'paste',data:text+'\n'},'*');}catch(e){alert('Could not send to terminal.');}
-    var b = document.getElementById('maas-send-btn');
-    b.textContent = '✓'; setTimeout(function(){ b.textContent = '▶'; }, 1500);
-  })()">▶</button>
 </div>
 <script>
   (function() {
@@ -299,16 +290,6 @@ Click *Add variable* three times to create three rows, then fill in each row wit
         var k = keyInput.value.trim();
         keyVal.textContent = k || '<paste your API key from above>';
         keyVal.className = k ? 'oc-val' : 'oc-placeholder';
-      }
-      var urlVal = document.getElementById('oc-url-val');
-      var maasEnvBlock = document.getElementById('maas-env-block');
-      if (urlVal && maasEnvBlock) {
-        var lines = maasEnvBlock.innerText.split('\n');
-        var urlLine = lines.find(function(l){ return l.indexOf('MAAS_URL=') !== -1; });
-        if (urlLine) {
-          var u = (urlLine.split('MAAS_URL=')[1] || '').trim();
-          if (u) urlVal.textContent = u + '/v1';
-        }
       }
     }
     function attach() {
