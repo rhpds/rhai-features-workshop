@@ -14,7 +14,7 @@ image::maas-object-model-governance.png[MaaS Object Model and Governance diagram
 * **MaaSSubscription** - the central resource that maps users and groups to models, and defines quota and rate limits. Every API key you generate is backed by a subscription.
 * **MaaSAuthPolicy** - authorizes specific users or groups to access model endpoints through the AI Gateway. It enforces the access rules at the HTTP level on every request.
 * **MaaSModelRef** - points to the actual inference server (an llm-d deployment, a vLLM runtime, or an external provider). The subscription references this to know where to route requests.
-* **ExternalProvider / ExternalModel** - when the backend is a cloud provider (OpenAI, Anthropic, Gemini), these resources configure the endpoint, credentials, and model name mapping. From the consumer's perspective, calling an ExternalModel is identical to calling a self-hosted one.
+* **ExternalProvider / ExternalModel** - when the backend is a cloud provider (OpenAI, Anthropic, Gemini), these resources configure the endpoint, credentials, and model name mapping. From the consumers perspective, calling an ExternalModel is identical to calling a self-hosted one.
 
 NOTE: Both `MaaSSubscription` (quota) AND `MaaSAuthPolicy` (access) must exist for a consumer to reach an endpoint. Creating a subscription without an auth policy gives you rate limits but no access. The UI's *"Create matching authorization policy"* checkbox creates both at once.
 
