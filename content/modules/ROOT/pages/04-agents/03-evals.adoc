@@ -50,26 +50,9 @@ IFEval tests whether a model can follow explicit formatting instructions, things
 +
 . The model is behind an API key, so we need to create a Kubernetes Secret that EvalHub can reference. Switch to the *Terminal* tab and run:
 +
-[subs=attributes+]
-++++
-<style>
-  .evalhub-secret-wrap { position: relative; margin: 0.5rem 0; }
-  .evalhub-secret-block {
-    background: #1e1e1e; border-radius: 6px;
-    padding: 0.75rem 3.5rem 0.75rem 1rem;
-    font-family: monospace; font-size: 0.82rem; color: #d4d4d4; white-space: pre;
-  }
-  .evalhub-copy-btn {
-    position: absolute; top: 0.4rem; right: 0.5rem;
-    background: #28a745; color: white; border: none; border-radius: 4px;
-    padding: 0.3rem 0.55rem; font-size: 0.8rem; cursor: pointer;
-    opacity: 0.4; transition: opacity 0.2s;
-  }
-  .evalhub-copy-btn:hover { opacity: 1; }
-  .evalhub-placeholder { color: #6b7280; font-style: italic; }
-</style>
-<div class="listingblock evalhub-secret-wrap">
-  <div class="evalhub-secret-block" id="evalhub-secret-block">oc apply -n wksp-{user} -f - &lt;&lt;EOF
+[source,console,role=execute,subs=attributes+]
+----
+oc apply -n wksp-{user} -f - <<EOF
 apiVersion: v1
 kind: Secret
 metadata:
@@ -77,38 +60,9 @@ metadata:
   namespace: wksp-{user}
 type: Opaque
 stringData:
-  api-key: <span class="evalhub-placeholder" id="evalhub-key-val">&lt;paste-your-api-key&gt;</span>
-EOF</div>
-  <button class="evalhub-copy-btn" title="Copy" onclick="(function(){
-    var text = document.getElementById('evalhub-secret-block').innerText;
-    navigator.clipboard.writeText(text).then(function(){
-      var b = document.getElementById('evalhub-copy-btn');
-      b.textContent = '✓'; setTimeout(function(){ b.textContent = '⎘'; }, 1200);
-    });
-  })()" id="evalhub-copy-btn">⎘</button>
-</div>
-<script>
-  (function() {
-    function syncEvalhubKey() {
-      var keyVal = document.getElementById('evalhub-key-val');
-      if (!keyVal) return;
-      var k = '';
-      var keyInput = document.getElementById('api-key-input');
-      if (keyInput) k = keyInput.value.trim();
-      if (!k) { try { k = localStorage.getItem('workshop-api-key') || ''; } catch(e) {} }
-      keyVal.textContent = k || '<paste-your-api-key>';
-      keyVal.className = k ? '' : 'evalhub-placeholder';
-    }
-    function attach() {
-      var k = document.getElementById('api-key-input');
-      if (k) k.addEventListener('input', syncEvalhubKey);
-      syncEvalhubKey();
-    }
-    if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', attach); }
-    else { attach(); }
-  })();
-</script>
-++++
+  api-key: <paste-your-api-key>
+EOF
+----
 +
 TIP: If you no longer have your API key, you can always go back to the *API Keys* tab and create a new one.
 +
