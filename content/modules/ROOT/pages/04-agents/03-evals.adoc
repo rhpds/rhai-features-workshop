@@ -18,7 +18,7 @@ By the end of this section, you will be able to:
 * Run an llm-as-judge evaluation in MLflow
 * (Optional) Import and run an automated evaluation pipeline and review results in MLflow
 
-== Exercise 6: Evaluate the Model with EvalHub
+== Exercise 5: Evaluate the Model with EvalHub
 
 EvalHub is the centralized evaluation interface for the platform. It lets you run standardized benchmarks against any model endpoint and compare results across versions.
 
@@ -29,9 +29,9 @@ image::evals-evalhub-main.png[EvalHub interface to start a new evaluation run,li
 
 . You will see a list of available benchmarks. Use the *Name* filter and search for `ifeval` to find *Instruction Following Evaluation (IFEval)*. Click *Select benchmark*.
 +
-IFEval tests whether a model can follow explicit formatting instructions, things like "respond in exactly 3 sentences," "include the keyword X," "output valid JSON," or "write in all caps." This matters directly for {assistant_name}: we built a detailed system prompt that enforces corporate language, formatting rules, and strict tool-use behavior. If the underlying model can't reliably follow structured instructions, {assistant_name} will break those rules: responding in markdown when told not to, skipping tool calls, or ignoring persona constraints.
-+
 image::evals-ifeval-select.png[Search for ifeval and select the IFEval benchmark,link=self,window=blank,width=700]
++
+IFEval tests whether a model can follow explicit formatting instructions, things like "respond in exactly 3 sentences," "include the keyword X," "output valid JSON," or "write in all caps." This matters directly for {assistant_name}: we built a detailed system prompt that enforces corporate language, formatting rules, and strict tool-use behavior. If the underlying model can't reliably follow structured instructions, {assistant_name} will break those rules: responding in markdown when told not to, skipping tool calls, or ignoring persona constraints.
 +
 . Fill in the evaluation run form:
 +
@@ -140,7 +140,7 @@ Here is what the results mean:
 NOTE: IFEval measures instruction-following capability, not mortgage-specific quality. It is a useful baseline: if a model can't follow explicit formatting constraints, it will also struggle with tool call schemas and system prompt rules in production. A sudden drop in IFEval scores after a model update is a signal that something changed in the model's core compliance behavior. Domain-specific evaluations are what tell you whether {assistant_name} is answering {company_name}'s questions correctly.
 
 
-== Exercise 7: Evaluate RAG Quality with RAGAS
+== Exercise 6: Evaluate RAG Quality with RAGAS
 
 RAGAS is a framework that evaluates three things:
 
@@ -175,7 +175,7 @@ USERNAME = "{user}"
 PASSWORD = "{password}"
 ----
 +
-TIP: The `evalhub-secret` is the same Kubernetes Secret you created in Exercise 6 with your API key. If you skipped that step, go back and create it first.
+TIP: The `evalhub-secret` is the same Kubernetes Secret you created in Exercise 5 with your API key. If you skipped that step, go back and create it first.
 +
 . Run the cells. The notebook:
 .. Sends a test set of mortgage questions through the RAG pipeline
@@ -198,7 +198,7 @@ image::evals-select-python-env.png[Select Python environment,link=self,window=bl
 
 TIP: If faithfulness is low but context precision is high, the model has the right documents but is ignoring them: it's answering from its own training data instead of what you gave it. If context precision is low, the system is pulling in the wrong documents when it searches, so the answer has nothing good to work with. Both cases point to different things to fix: the first is a model behavior issue, the second is a search quality issue.
 
-== Exercise 8: MLflow llm-as-judge
+== Exercise 7: MLflow llm-as-judge
 
 RAGAS requires a test set with known source documents. But what about open-ended agent evaluations, where you don't have a single correct answer to compare against?
 
@@ -291,16 +291,16 @@ The *Feedback* section shows scorer results (`contains_expected: True`, `respons
 
 NOTE: llm-as-judge is not infallible. The judge model has its own biases and limitations. It is most useful for catching obvious regressions (a response that stopped following the persona, a tool call that produced a wrong calculation) rather than for fine-grained quality comparison.
 
-== Exercise 9 (Optional): Run an Evaluation Pipeline
+== Exercise 8 (Optional): Run an Evaluation Pipeline
 
-The notebook-based evaluations above are great for exploration. For production, you want evaluation running automatically as a scheduled pipeline, not something a person has to trigger manually. This is the same evaluation you ran in Exercise 8, but packaged as a pipeline that can run without a notebook, on a schedule, in its own container.
+The notebook-based evaluations above are great for exploration. For production, you want evaluation running automatically as a scheduled pipeline, not something a person has to trigger manually. This is the same evaluation you ran in Exercise 7, but packaged as a pipeline that can run without a notebook, on a schedule, in its own container.
 
 WARNING: This exercise requires a few extra minutes. Skip it if you are short on time and continue to the Section Summary.
 
 The pipeline packages the simple evaluation into four automated steps:
 
 * *setup-mlflow-op* - configures the MLflow tracking URI, workspace, and experiment
-* *create-dataset-op* - creates the evaluation dataset on the MLflow server (the same 6 test cases from Exercise 8)
+* *create-dataset-op* - creates the evaluation dataset on the MLflow server (the same 6 test cases from Exercise 7)
 * *run-simple-eval-op* - runs the three deterministic scorers (`contains_expected`, `has_numeric_result`, `response_length`)
 * *report-results-op* - prints the evaluation summary and logs results
 

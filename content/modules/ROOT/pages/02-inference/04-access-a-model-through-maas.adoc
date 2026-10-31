@@ -439,7 +439,7 @@ But self-hosted models are not the only thing MaaS can expose. The same gateway 
 </div>
 ++++
 
-== Exercise 9: Observe Your Usage
+== Exercise 8: Observe Your Usage
 
 . On OpenShift AI dashboard go to *Observe & monitor > Dashboard* and click on `qwen3-235b-a22b`. Select the *Usage* tab:
 +

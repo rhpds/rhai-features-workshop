@@ -15,7 +15,7 @@ Estimated time: *10 minutes*
 
 NOTE: OpenShell is Dev Preview in RHOAI 3.5 and Tech Preview in 3.6, with GA targeted for a later release. What you see here represents the direction of secure agent onboarding on OpenShift AI.
 
-== Exercise 1: See the Sandbox in OpenShift
+== Exercise 10: See the Sandbox in OpenShift
 
 A sandboxed OpenCode agent is already deployed in your environment. Start by finding it - not in the OpenShift console, but in the RHOAI dashboard, where agents are a first-class object alongside models and MCP servers.
 
@@ -40,7 +40,7 @@ Two columns matter here:
 
 TIP: The sandbox is a real Kubernetes object, so you can inspect it from the terminal as well: `oc get sandboxes.agents.x-k8s.io -n wksp-{user}` lists it, and the running pod carries an `agents.x-k8s.io/sandbox-name-hash` label tying it back to the sandbox that owns it.
 
-== Exercise 2: Connect to the Sandbox
+== Exercise 11: Connect to the Sandbox
 
 Now connect to the running sandbox and see what the agent can access.
 
@@ -105,7 +105,7 @@ opencode
 
 TIP: Prefer to stay outside the sandbox? `openshell sandbox exec --name fedaura-opencode -- <command>` runs a single command and returns, which is handy for scripted checks.
 
-== Exercise 3: Attempt Data Exfiltration
+== Exercise 12: Attempt Data Exfiltration
 
 Time to see this in practice. You will ask OpenCode to share some notes via a GitHub gist and watch what happens at the network level: first with egress open, then with policy enforced.
 
@@ -157,7 +157,7 @@ The content in this example is harmless meeting notes. In production, the agent 
 
 WARNING: Give the agent a token, which any real coding agent has, and that request succeeds.
 
-== Exercise 4: Enforce Policy to Block Exfiltration
+== Exercise 13: Enforce Policy to Block Exfiltration
 
 . Go back to the *workbench terminal*, apply the standard policy you fetched in exercise 3:
 +
@@ -221,7 +221,7 @@ Read the difference between the two failures carefully, because it is the whole 
 
 [cols="1,2",options="header"]
 |===
-| Exercise 3 - open | Exercise 4 - closed
+| Exercise 12 - open | Exercise 13 - closed
 
 | `401 Requires authentication`
 | `policy_denied` at `layer: l7`
@@ -234,7 +234,7 @@ Notice `layer: l7`. The host was not blocked: `GET` to the same host still retur
 
 The response also names the policy that denied it (`github_readonly`) and the rule that would have been required (`rest_allow` for `POST /gists`). That is the audit trail: not "something was blocked", but which rule, at which layer, for which binary.
 
-== Exercise 5: Customize Your Policies
+== Exercise 14: Customize Your Policies
 
 Deny-by-default means you start with nothing allowed and open up only what the agent demonstrably needs. The loop is the same one `audit2allow` gives you in SELinux: the agent is blocked, the denial tells you exactly which rule was missing, you decide whether to add it, and it hot-loads.
 
