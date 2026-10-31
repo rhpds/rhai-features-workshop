@@ -3,7 +3,6 @@
 :imagesdir: ../assets/images
 :toc: macro
 :toclevels: 1
-:toc-placement: preamble
 :icons: font
 
 WARNING: This is an advanced optional section. It requires additional time and is intended for participants who want to understand how the Risk MCP's predictive model was trained. The main section exercises are complete. This section is self-contained and can be done independently.

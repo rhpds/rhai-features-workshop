@@ -3,7 +3,6 @@
 :imagesdir: ../assets/images
 :toc: macro
 :toclevels: 1
-:toc-placement: preamble
 :icons: font
 
 {assistant_name} called five tools in her risk assessment. Those tools did not come from the LLM. They came from external servers that the platform connected her to through a standard protocol called MCP.

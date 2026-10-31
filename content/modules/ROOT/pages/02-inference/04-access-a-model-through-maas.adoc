@@ -3,7 +3,6 @@
 :navtitle: Models as a Service
 :toc: macro
 :toclevels: 1
-:toc-placement: preamble
 :icons: font
 
 == Exercise 4: Models as a Service

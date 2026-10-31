@@ -3,7 +3,6 @@
 :imagesdir: ../assets/images
 :toc: macro
 :toclevels: 1
-:toc-placement: preamble
 :icons: font
 
 You built {assistant_name}, tested her, and everything looked good. But the model is just one variable. The documents behind RAG will change as policies update. New tools will be added to the MCP catalog. Someone will tweak the system prompt. Any of those changes, without a model update, can shift her behavior in ways that are hard to spot until something goes wrong in production.

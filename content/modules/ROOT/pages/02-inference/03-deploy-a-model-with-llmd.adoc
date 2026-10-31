@@ -3,7 +3,6 @@
 :navtitle: Deploy a Model with llm-d
 :toc: macro
 :toclevels: 1
-:toc-placement: preamble
 :icons: font
 
 == Exercise 3: Deploy with llm-d
