@@ -1,15 +1,9 @@
 {{- if .Values.usageLogsPatcher.enabled }}
 # RHOAI 3.5.x bootstrap race: the maas-controller can create the usage-logs
-# OpenTelemetryCollector seconds before the OTel operator's defaulting webhook is
-# registered, so spec.mode is stored empty. Every later reconcile is then denied
-# ("mode is set to , which does not support modification"), so no collector runs,
-# the gateway's OTLP access logs never reach Loki, and the usage dashboards
-# (including the only user-scoped one, dashboard-5-maas-usage-logs) are never
-# created - a non-admin sees an empty Observe & monitor dashboard.
-#
-# Deleting the CR is enough to recover: the controller applies it without a mode,
-# so once the defaulting webhook exists it sets mode=deployment and the apply
-# succeeds. Letting the controller recreate it also keeps its ownerReferences.
+# OpenTelemetryCollector before the OTel defaulting webhook is registered, so
+# spec.mode is stored empty and every later reconcile is denied - no collector
+# runs, access logs never reach Loki, and dashboard-5-maas-usage-logs (the only
+# user-scoped usage dashboard) is never created. Deleting it lets it come back clean.
 ---
 apiVersion: v1
 kind: ServiceAccount
