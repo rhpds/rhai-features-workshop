@@ -67,15 +67,16 @@ spec:
 
               echo "Waiting for OpenTelemetryCollector $NS/$CR..."
               for i in $(seq 1 60); do
-                if oc get opentelemetrycollector "$CR" -n "$NS" >/dev/null 2>&1; then
+                if oc get opentelemetrycollector "$CR" -n "$NS" >/dev/null 2>/tmp/get.err; then
                   break
                 fi
-                echo "  attempt $i/60 - not found yet, sleeping 10s..."
+                echo "  attempt $i/60 - not there yet ($(tr -d '\n' < /tmp/get.err)), sleeping 10s..."
                 sleep 10
               done
 
-              if ! oc get opentelemetrycollector "$CR" -n "$NS" >/dev/null 2>&1; then
-                echo "ERROR: $CR not found after 10 minutes. Is usageLogging enabled on the MaaS Config?"
+              if ! oc get opentelemetrycollector "$CR" -n "$NS" >/dev/null 2>/tmp/get.err; then
+                echo "ERROR: $CR not readable after 10 minutes: $(cat /tmp/get.err)"
+                echo "Is usageLogging enabled on the MaaS Config?"
                 exit 1
               fi
 
@@ -90,7 +91,10 @@ spec:
 
               # Patched locally (no API call, so the webhook is not involved) to set
               # mode and drop the server-owned fields that would be rejected on create.
-              # ownerReferences are kept so the CR is still garbage collected with the Config.
+              # ownerReferences go too: they carry blockOwnerDeletion, which the API
+              # server only accepts from a caller that can set finalizers on the owning
+              # cluster-scoped Config. The maas-controller re-adopts the CR on its next
+              # apply, so ownership is restored without that extra permission.
               oc patch --local -f /tmp/cr.yaml --type=merge -o yaml -p '{
                 "spec": {"mode": "deployment"},
                 "metadata": {
@@ -98,7 +102,8 @@ spec:
                   "uid": null,
                   "creationTimestamp": null,
                   "generation": null,
-                  "managedFields": null
+                  "managedFields": null,
+                  "ownerReferences": null
                 },
                 "status": null
               }' > /tmp/cr-fixed.yaml
