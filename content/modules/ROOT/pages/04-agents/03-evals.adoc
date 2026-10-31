@@ -79,6 +79,10 @@ oc login --insecure-skip-tls-verify $(oc whoami --show-server) -u {user} -p {pas
 * *Benchmark parameters*: `{"tokenizer": "Qwen/Qwen3-235B-A22B","backend": "chat", "num_examples": 50}`
 --
 
+. With the secret selected, click *Validate connection*. This checks that EvalHub can reach the endpoint with that key, so you catch a wrong secret or a bad key now rather than after a failed run. Wait for *Connection established successfully* before continuing:
++
+image::evals-validate-connection.png[Validate connection button showing Connection established successfully,link=self,window=blank,width=400]
+
 . Click *Start evaluation run*. Wait for the run to complete. It may take a few minutes to finish.
 
 . When it is completed, you can click the name *IFEval* to see the full evaluation report.
