@@ -27,6 +27,10 @@ EvalHub is the centralized evaluation interface for the platform. It lets you ru
 // TODO: screenshot of EvalHub main interface with existing runs (evals-evalhub-main.png)
 image::evals-evalhub-main.png[EvalHub interface to start a new evaluation run,link=self,window=blank,width=700]
 
+. For the evaluation type, select *Benchmark*. A benchmark runs a single test, while a benchmark suite runs a predefined group of them:
++
+image::evals-select-evaluation-type.png[Select evaluation type page with the Benchmark option highlighted,link=self,window=blank,width=700]
+
 . You will see a list of available benchmarks. Use the *Name* filter and search for `ifeval` to find *Instruction Following Evaluation (IFEval)*. Click *Select benchmark*.
 +
 image::evals-ifeval-select.png[Search for ifeval and select the IFEval benchmark,link=self,window=blank,width=700]
