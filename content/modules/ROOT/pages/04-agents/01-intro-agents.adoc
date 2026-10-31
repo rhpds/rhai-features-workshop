@@ -31,17 +31,21 @@ You have already seen {assistant_name} as a Borrower and a CEO. Now step into th
 // TODO: screenshot of Underwriter persona login (agents-underwriter-login.png)
 image::agents-underwriter-login.png[Sign in dialog with Underwriter persona selected,link=self,window=blank,width=700]
 
+. In the queue, click Lisa Washington's application and note its number. Here it is `#44`, but it changes per environment, so use the number you see:
++
+image::agents-application-number.png[Application header showing Lisa Washington and the application number,link=self,window=blank,width=400]
+
 . In the chat panel, ask:
 +
 [source,text]
 ----
-Run a risk assessment on application #196
+Run a risk assessment on application #44
 ----
 
 . Observe the response. {assistant_name} returns a structured risk assessment with precise numbers (DTI ratio, LTV, credit score, approval recommendation), basically things a loan officer needs to know:
 +
 // TODO: screenshot of risk assessment response (agents-risk-assessment-response.png)
-image::agents-risk-assessment-response.png[{assistant_name}'s risk assessment response with precise figures for application 3730,link=self,window=blank,width=700]
+image::agents-risk-assessment-response.png[{assistant_name}'s risk assessment response with precise figures for application #44,link=self,window=blank,width=700]
 +
 This is not a chatbot estimating from general knowledge. {assistant_name} called real tools, retrieved the application data, ran the calculations, and passed the results through a predictive model. The numbers are grounded in the actual application record.
 

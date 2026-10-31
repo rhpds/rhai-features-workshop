@@ -44,7 +44,7 @@ usageLogsPatcher:
   enabled: true
   # Bump to re-run the patch; the Job name carries it, so a new version supersedes
   # the old Job and ArgoCD prunes the previous one.
-  version: 2
+  version: 3
   image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
   # Where the RHOAI monitoring stack (and so the collector) lives. Matches
   # DSCI spec.monitoring.namespace.

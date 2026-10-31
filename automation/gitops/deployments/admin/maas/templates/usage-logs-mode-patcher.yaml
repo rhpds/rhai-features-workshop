@@ -1,9 +1,15 @@
 {{- if .Values.usageLogsPatcher.enabled }}
 # RHOAI 3.5.x bootstrap race: the maas-controller can create the usage-logs
 # OpenTelemetryCollector seconds before the OTel operator's defaulting webhook is
-# registered, leaving spec.mode empty. mode is immutable, so the validating webhook
-# then denies every reconcile: no collector runs, the gateway's OTLP access logs
-# never reach Loki, and the usage dashboards (incl. user-scoped dashboard-5) never appear.
+# registered, so spec.mode is stored empty. Every later reconcile is then denied
+# ("mode is set to , which does not support modification"), so no collector runs,
+# the gateway's OTLP access logs never reach Loki, and the usage dashboards
+# (including the only user-scoped one, dashboard-5-maas-usage-logs) are never
+# created - a non-admin sees an empty Observe & monitor dashboard.
+#
+# Deleting the CR is enough to recover: the controller applies it without a mode,
+# so once the defaulting webhook exists it sets mode=deployment and the apply
+# succeeds. Letting the controller recreate it also keeps its ownerReferences.
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -19,7 +25,7 @@ metadata:
 rules:
   - apiGroups: ["opentelemetry.io"]
     resources: ["opentelemetrycollectors"]
-    verbs: ["get", "list", "watch", "create", "delete"]
+    verbs: ["get", "list", "watch", "delete"]
   # Used only to confirm the collector Deployment appears once mode is set.
   - apiGroups: ["apps"]
     resources: ["deployments"]
@@ -86,34 +92,23 @@ spec:
                 exit 0
               fi
 
-              echo "spec.mode is empty. Recreating $CR with mode=deployment."
-              oc get opentelemetrycollector "$CR" -n "$NS" -o yaml > /tmp/cr.yaml
-
-              # Patched locally (no API call, so the webhook is not involved) to set
-              # mode and drop the server-owned fields that would be rejected on create.
-              # ownerReferences go too: they carry blockOwnerDeletion, which the API
-              # server only accepts from a caller that can set finalizers on the owning
-              # cluster-scoped Config. The maas-controller re-adopts the CR on its next
-              # apply, so ownership is restored without that extra permission.
-              oc patch --local -f /tmp/cr.yaml --type=merge -o yaml -p '{
-                "spec": {"mode": "deployment"},
-                "metadata": {
-                  "resourceVersion": null,
-                  "uid": null,
-                  "creationTimestamp": null,
-                  "generation": null,
-                  "managedFields": null,
-                  "ownerReferences": null
-                },
-                "status": null
-              }' > /tmp/cr-fixed.yaml
-
+              echo "spec.mode is empty. Deleting $CR so the controller recreates it."
               oc delete opentelemetrycollector "$CR" -n "$NS" --wait=true
-              oc create -f /tmp/cr-fixed.yaml
 
-              NEW_MODE=$(oc get opentelemetrycollector "$CR" -n "$NS" -o jsonpath='{.spec.mode}')
-              if [ "$NEW_MODE" != "deployment" ]; then
-                echo "ERROR: expected mode=deployment, got '$NEW_MODE'"
+              echo "Waiting for the maas-controller to recreate it with a mode..."
+              NEW_MODE=""
+              for i in $(seq 1 30); do
+                NEW_MODE=$(oc get opentelemetrycollector "$CR" -n "$NS" -o jsonpath='{.spec.mode}' 2>/dev/null || true)
+                if [ -n "$NEW_MODE" ]; then
+                  break
+                fi
+                echo "  attempt $i/30 - not recreated yet, sleeping 10s..."
+                sleep 10
+              done
+
+              if [ -z "$NEW_MODE" ]; then
+                echo "ERROR: $CR was not recreated with a mode within 5 minutes."
+                echo "Check the maas-controller logs in redhat-ods-applications."
                 exit 1
               fi
               echo "spec.mode is now '$NEW_MODE'."
