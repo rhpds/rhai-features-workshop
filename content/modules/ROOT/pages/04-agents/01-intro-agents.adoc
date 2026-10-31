@@ -31,7 +31,7 @@ You have already seen {assistant_name} as a Borrower and a CEO. Now step into th
 // TODO: screenshot of Underwriter persona login (agents-underwriter-login.png)
 image::agents-underwriter-login.png[Sign in dialog with Underwriter persona selected,link=self,window=blank,width=350]
 
-. In the queue, click Lisa Washington's application and note its number. Here it is `#44`, but it changes per environment, so use the number you see:
+. In the queue, click Lisa Washington's application and note its number. Here it is `#44`, but it can change per environment, so use the number you see:
 +
 image::agents-application-number.png[Application header showing Lisa Washington and the application number,link=self,window=blank,width=400]
 
