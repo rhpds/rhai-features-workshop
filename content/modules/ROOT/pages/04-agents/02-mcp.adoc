@@ -1,4 +1,4 @@
-= Exercise 3: Tools and MCP
+= Tools and MCP
 :navtitle: MCP and Tool Access
 :imagesdir: ../assets/images
 :toc: macro

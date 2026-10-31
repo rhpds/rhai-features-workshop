@@ -1,4 +1,4 @@
-= Exercise 6: Continuous Evaluation
+= Continuous Evaluation
 :navtitle: Evaluations and Quality
 :imagesdir: ../assets/images
 :toc: macro
