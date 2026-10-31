@@ -29,7 +29,7 @@ You have already seen {assistant_name} as a Borrower and a CEO. Now step into th
 . Navigate to the *{company_name} App* tab. Click *Sign In* and select the *Underwriter* persona:
 +
 // TODO: screenshot of Underwriter persona login (agents-underwriter-login.png)
-image::agents-underwriter-login.png[Sign in dialog with Underwriter persona selected,link=self,window=blank,width=700]
+image::agents-underwriter-login.png[Sign in dialog with Underwriter persona selected,link=self,window=blank,width=350]
 
 . In the queue, click Lisa Washington's application and note its number. Here it is `#44`, but it changes per environment, so use the number you see:
 +
@@ -45,7 +45,7 @@ Run a risk assessment on application #44
 . Observe the response. {assistant_name} returns a structured risk assessment with precise numbers (DTI ratio, LTV, credit score, approval recommendation), basically things a loan officer needs to know:
 +
 // TODO: screenshot of risk assessment response (agents-risk-assessment-response.png)
-image::agents-risk-assessment-response.png[{assistant_name}'s risk assessment response with precise figures for application #44,link=self,window=blank,width=700]
+image::agents-risk-assessment-response.png[{assistant_name}'s risk assessment response with precise figures for application #44,link=self,window=blank,width=350]
 +
 This is not a chatbot estimating from general knowledge. {assistant_name} called real tools, retrieved the application data, ran the calculations, and passed the results through a predictive model. The numbers are grounded in the actual application record.
 
@@ -70,7 +70,7 @@ image::agents-mlflow-experiments-nav.png[OpenShift AI Dashboard showing MLflow e
 
 . Find the experiment called *mortgage-ai* for the mortgage-ai project and click on *Traces*. You should see a list of recent agent interactions, including the risk assessment you just triggered.
 +
-image::agents-mlflow-experiments-traces.png[[MLflow trace list showing recent agent interactions,link=self,window=blank,width=700]
+image::agents-mlflow-experiments-traces.png[MLflow trace list showing recent agent interactions,link=self,window=blank,width=700]
 
 . Locate the most recent trace for your request and click it:
 +
