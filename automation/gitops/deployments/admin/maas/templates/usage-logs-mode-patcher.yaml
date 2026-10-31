@@ -1,26 +1,9 @@
 {{- if .Values.usageLogsPatcher.enabled }}
-# Workaround for RHOAI 3.5.x: with usageLogging enabled (see config.yaml), the
-# maas-controller applies the usage-logs OpenTelemetryCollector without
-# spec.mode. The OTel operator's CRD declares mode as an enum
-# (daemonset|deployment|sidecar|statefulset) with no default, so its validating
-# webhook denies the apply:
-#
-#   admission webhook "vopentelemetrycollectorcreateupdatebeta.kb.io" denied the
-#   request: the OpenTelemetry Collector mode is set to , which does not support
-#   modification
-#
-# The denial fails the whole maas-controller reconcile, so three things never
-# happen: no collector workload is created (only its two Services, with no
-# endpoints), the gateway's OTLP access logs go nowhere and Loki stays empty,
-# and the Perses dashboards created later in the same reconcile
-# (dashboard-4-maas-usage-logs-admin and the user-scoped
-# dashboard-5-maas-usage-logs) are never created. Without dashboard-5 a
-# non-admin user sees an empty Observe & monitor dashboard, because every other
-# dashboard is admin-scoped.
-#
-# mode is immutable, so the CR cannot be patched; it has to be recreated. The
-# maas-controller does not own spec.mode in its server-side apply, so the value
-# we set here survives its next reconcile and that reconcile then succeeds.
+# RHOAI 3.5.x bootstrap race: the maas-controller can create the usage-logs
+# OpenTelemetryCollector seconds before the OTel operator's defaulting webhook is
+# registered, leaving spec.mode empty. mode is immutable, so the validating webhook
+# then denies every reconcile: no collector runs, the gateway's OTLP access logs
+# never reach Loki, and the usage dashboards (incl. user-scoped dashboard-5) never appear.
 ---
 apiVersion: v1
 kind: ServiceAccount
