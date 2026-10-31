@@ -1,0 +1,145 @@
+{{- if .Values.usageLogsPatcher.enabled }}
+# Workaround for RHOAI 3.5.x: with usageLogging enabled (see config.yaml), the
+# maas-controller applies the usage-logs OpenTelemetryCollector without
+# spec.mode. The OTel operator's CRD declares mode as an enum
+# (daemonset|deployment|sidecar|statefulset) with no default, so its validating
+# webhook denies the apply:
+#
+#   admission webhook "vopentelemetrycollectorcreateupdatebeta.kb.io" denied the
+#   request: the OpenTelemetry Collector mode is set to , which does not support
+#   modification
+#
+# The denial fails the whole maas-controller reconcile, so three things never
+# happen: no collector workload is created (only its two Services, with no
+# endpoints), the gateway's OTLP access logs go nowhere and Loki stays empty,
+# and the Perses dashboards created later in the same reconcile
+# (dashboard-4-maas-usage-logs-admin and the user-scoped
+# dashboard-5-maas-usage-logs) are never created. Without dashboard-5 a
+# non-admin user sees an empty Observe & monitor dashboard, because every other
+# dashboard is admin-scoped.
+#
+# mode is immutable, so the CR cannot be patched; it has to be recreated. The
+# maas-controller does not own spec.mode in its server-side apply, so the value
+# we set here survives its next reconcile and that reconcile then succeeds.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: patch-usage-logs-mode
+  namespace: {{ .Values.usageLogsPatcher.namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: patch-usage-logs-mode
+  namespace: {{ .Values.usageLogsPatcher.namespace }}
+rules:
+  - apiGroups: ["opentelemetry.io"]
+    resources: ["opentelemetrycollectors"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  # Used only to confirm the collector Deployment appears once mode is set.
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: patch-usage-logs-mode
+  namespace: {{ .Values.usageLogsPatcher.namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: patch-usage-logs-mode
+subjects:
+  - kind: ServiceAccount
+    name: patch-usage-logs-mode
+    namespace: {{ .Values.usageLogsPatcher.namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: patch-usage-logs-mode-v{{ .Values.usageLogsPatcher.version }}
+  namespace: {{ .Values.usageLogsPatcher.namespace }}
+  annotations:
+    # After admin/maas (wave 1) has created the Config that makes the
+    # maas-controller create the collector in the first place.
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: patch-usage-logs-mode
+      restartPolicy: Never
+      containers:
+        - name: patch
+          image: {{ .Values.usageLogsPatcher.image }}
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              NS={{ .Values.usageLogsPatcher.namespace }}
+              CR=usage-logs
+
+              echo "Waiting for OpenTelemetryCollector $NS/$CR..."
+              for i in $(seq 1 60); do
+                if oc get opentelemetrycollector "$CR" -n "$NS" >/dev/null 2>&1; then
+                  break
+                fi
+                echo "  attempt $i/60 - not found yet, sleeping 10s..."
+                sleep 10
+              done
+
+              if ! oc get opentelemetrycollector "$CR" -n "$NS" >/dev/null 2>&1; then
+                echo "ERROR: $CR not found after 10 minutes. Is usageLogging enabled on the MaaS Config?"
+                exit 1
+              fi
+
+              MODE=$(oc get opentelemetrycollector "$CR" -n "$NS" -o jsonpath='{.spec.mode}')
+              if [ -n "$MODE" ]; then
+                echo "spec.mode is already '$MODE' - nothing to do."
+                exit 0
+              fi
+
+              echo "spec.mode is empty. Recreating $CR with mode=deployment."
+              oc get opentelemetrycollector "$CR" -n "$NS" -o yaml > /tmp/cr.yaml
+
+              # Patched locally (no API call, so the webhook is not involved) to set
+              # mode and drop the server-owned fields that would be rejected on create.
+              # ownerReferences are kept so the CR is still garbage collected with the Config.
+              oc patch --local -f /tmp/cr.yaml --type=merge -o yaml -p '{
+                "spec": {"mode": "deployment"},
+                "metadata": {
+                  "resourceVersion": null,
+                  "uid": null,
+                  "creationTimestamp": null,
+                  "generation": null,
+                  "managedFields": null
+                },
+                "status": null
+              }' > /tmp/cr-fixed.yaml
+
+              oc delete opentelemetrycollector "$CR" -n "$NS" --wait=true
+              oc create -f /tmp/cr-fixed.yaml
+
+              NEW_MODE=$(oc get opentelemetrycollector "$CR" -n "$NS" -o jsonpath='{.spec.mode}')
+              if [ "$NEW_MODE" != "deployment" ]; then
+                echo "ERROR: expected mode=deployment, got '$NEW_MODE'"
+                exit 1
+              fi
+              echo "spec.mode is now '$NEW_MODE'."
+
+              echo "Waiting for the collector Deployment to appear..."
+              for i in $(seq 1 30); do
+                if oc get deployment "$CR-collector" -n "$NS" >/dev/null 2>&1; then
+                  echo "Deployment $CR-collector created. Usage logs will now reach Loki."
+                  exit 0
+                fi
+                echo "  attempt $i/30 - not there yet, sleeping 10s..."
+                sleep 10
+              done
+
+              echo "ERROR: $CR-collector Deployment was not created after 5 minutes"
+              exit 1
+{{- end }}

@@ -36,3 +36,16 @@ subscriptions:
     tokenLimit: 10000
     window: 1m
     priority: 20
+# Repairs the usage-logs OpenTelemetryCollector that the maas-controller creates
+# without spec.mode, which blocks the Loki usage pipeline and the usage
+# dashboards. See templates/usage-logs-mode-patcher.yaml for the full writeup.
+# Remove once RHOAI ships the collector with a mode set.
+usageLogsPatcher:
+  enabled: true
+  # Bump to re-run the patch; the Job name carries it, so a new version supersedes
+  # the old Job and ArgoCD prunes the previous one.
+  version: 1
+  image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+  # Where the RHOAI monitoring stack (and so the collector) lives. Matches
+  # DSCI spec.monitoring.namespace.
+  namespace: redhat-ods-monitoring
