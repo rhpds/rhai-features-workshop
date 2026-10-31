@@ -5,3 +5,4 @@ agnosticv/
 .DS_Store
 # Node dependencies
 node_modules/
+.playwright*
