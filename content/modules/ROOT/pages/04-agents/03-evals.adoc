@@ -67,21 +67,26 @@ EOF
 TIP: If you no longer have your API key, you can always go back to the *API Keys* tab and create a new one.
 +
 TIP: If you get an error, please log in to the OpenShift cluster again with the following command and then re-run the secret creation command:
++
 [source,console,role=execute,subs=attributes+]
 ----
 oc login --insecure-skip-tls-verify $(oc whoami --show-server) -u {user} -p {password}
 ----
 
-. Switch back to *EvalHub* and complete the remaining fields:
-+
---
-* *API Key Secret*: `evalhub-secret`
-* *Benchmark parameters*: `{"tokenizer": "Qwen/Qwen3-235B-A22B","backend": "chat", "num_examples": 50}`
---
+. Switch back to *EvalHub* and set the *API Key Secret* to `evalhub-secret`, the Secret you just created.
 
 . With the secret selected, click *Validate connection*. This checks that EvalHub can reach the endpoint with that key, so you catch a wrong secret or a bad key now rather than after a failed run. Wait for *Connection established successfully* before continuing:
 +
 image::evals-validate-connection.png[Validate connection button showing Connection established successfully,link=self,window=blank,width=400]
+
+. Tick *Benchmark parameters* and paste this JSON into the text area below it. It names the tokenizer to score against, runs the benchmark in chat mode, and caps the run at 50 prompts so it finishes in a few minutes:
++
+[source,json]
+----
+{"tokenizer": "Qwen/Qwen3-235B-A22B","backend": "chat", "num_examples": 50}
+----
++
+image::evals-benchmark-parameters.png[Benchmark parameters enabled with the JSON pasted into the text area,link=self,window=blank,width=700]
 
 . Click *Start evaluation run*. Wait for the run to complete. It may take a few minutes to finish.
 
