@@ -111,12 +111,19 @@ TIP: Prefer to stay outside the sandbox? `openshell sandbox exec --name fedaura-
 
 Time to see this in practice. You will ask OpenCode to share some notes via a GitHub gist and watch what happens at the network level: first with egress open, then with policy enforced.
 
-. While keeping the opencode terminal open, let's open up another terminal. It should be the *workbench terminal* (not inside the sandbox), and fetch two sandbox policies. They ship in a ConfigMap next to the sandbox, already rendered for your cluster:
+. While keeping the opencode terminal open, let's open up another terminal. It should be the *workbench terminal* (not inside the sandbox). Log in first, the same command you used in section 1.4, so you are authenticated as `{user}` and pointed at your own project:
 +
-[source,bash]
+[source,bash,subs=attributes+]
 ----
-oc get configmap openshell-provision -o jsonpath='{.data.policy\.yaml}' > policy.yaml
-oc get configmap openshell-provision -o jsonpath='{.data.policy-exfil-open\.yaml}' > policy-exfil-open.yaml
+oc login --insecure-skip-tls-verify $(oc whoami --show-server) -u {user} -p {password}
+----
+
+. Fetch two sandbox policies. They ship in a ConfigMap next to the sandbox, already rendered for your cluster:
++
+[source,bash,subs=attributes+]
+----
+oc get configmap openshell-provision -n wksp-{user} -o jsonpath='{.data.policy\.yaml}' > policy.yaml
+oc get configmap openshell-provision -n wksp-{user} -o jsonpath='{.data.policy-exfil-open\.yaml}' > policy-exfil-open.yaml
 
 wc -l policy.yaml policy-exfil-open.yaml
 ----
