@@ -5,6 +5,8 @@ metadata:
   name: nemo-guardrails-config
   labels:
     {{- include "mortgage-ai.nemo-guardrails.labels" . | nindent 4 }}
+    # Lets the dashboard read this config alongside the NemoGuardrails CR it belongs to.
+    opendatahub.io/dashboard: "true"
 data:
   config.yaml: |
     models:
