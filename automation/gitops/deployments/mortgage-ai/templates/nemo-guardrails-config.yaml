@@ -11,6 +11,13 @@ data:
       - type: main
         engine: openai
         model: {{ .Values.nemoGuardrails.llm.modelName | default .Values.secrets.LLM_MODEL | quote }}
+        # Without this, NeMo does not pick up the OPENAI_API_KEY the CR injects from
+        # nemo-guardrails-api-key and sends a runtime-provided value instead, which the
+        # MaaS litellm rejects: "[401] Authentication Error, LiteLLM Virtual Key expected.
+        # Received=runtime-provided, expected to start with 'sk-'". Every rail then fails
+        # with an internal error, which the Playground surfaces as
+        # "[guardrail_service_unavailable] guardrail service unavailable".
+        api_key_env_var: OPENAI_API_KEY
         parameters:
           {{- if .Values.nemoGuardrails.proxy.enabled }}
           base_url: "http://nemo-guardrails-proxy:8081/v1"
