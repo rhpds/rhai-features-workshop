@@ -160,9 +160,15 @@ HTTP_STATUS: 401
 +
 image::security-openshell-exfil-401.png[OpenCode terminal showing the 401 Requires authentication response from GitHub,link=self,window=blank,width=700]
 
-That `401` is the important result, and it is worth being precise about what it means. It came *from GitHub*: "Requires authentication". The request left the sandbox, crossed the internet, and was refused only because anonymous gist creation was withdrawn in 2018. Nothing in {company_name}'s platform stopped it.
+That `401` is the important result, and it is worth being precise about what it means. It came *from GitHub*: "Requires authentication".
 
-The content in this example is harmless meeting notes. In production, the agent cannot tell the difference between meeting notes and confidential underwriting thresholds. It will upload whatever it is asked to. The only thing that stood between that data and a public URL was a third party's authentication policy.
+The request left the sandbox and crossed the internet. It was refused only because anonymous gist creation was withdrawn in 2018.
+
+*Nothing in {company_name}'s platform stopped it.*
+
+The content in this example is harmless meeting notes. In production, the agent cannot tell the difference between meeting notes and confidential underwriting thresholds. It will upload whatever it is asked to.
+
+*The only thing standing between that data and a public URL was a third party's authentication policy.*
 
 WARNING: Give the agent a token, which any real coding agent has, and that request succeeds.
 
