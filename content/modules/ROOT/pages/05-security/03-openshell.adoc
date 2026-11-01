@@ -80,7 +80,7 @@ openshell sandbox exec --name fedaura-opencode --tty -- bash -l
 +
 You are now inside the sandbox. This is the agent's runtime environment: deny-by-default networking, a read-only filesystem apart from a few writable paths, and Landlock restrictions on what any process can reach. `exit` returns you to the workbench.
 +
-NOTE: There is also `openshell sandbox connect <name>`, which attaches to the shell the sandbox was started with. It is the more natural-looking command, but only one client may own that shell's input at a time, and the ownership is tracked by the gateway rather than by your terminal. Once something else holds it - a session that ended without pressing *Ctrl-P Ctrl-Q*, even in a workbench that no longer exists - every later `connect` reports `attached read-only` or simply hangs, and killing local processes does not release it. `exec --tty` allocates its own pseudo-terminal, so it never contends for that and cannot get stuck.
+NOTE: `openshell sandbox connect <name>` looks more natural, but only one client can own that shell's input, and the gateway tracks that ownership, not your terminal. A session that ended without *Ctrl-P Ctrl-Q* - even in a workbench that no longer exists - leaves every later `connect` reporting `attached read-only` or hanging, and killing local processes will not release it. `exec --tty` gets its own pseudo-terminal, so it cannot get stuck.
 +
 WARNING: Do not try to clear a stuck `connect` with `openshell sandbox stop`. A stopped sandbox cannot re-bootstrap its gateway token, and every later start fails with `IssueSandboxToken bootstrap exchange failed` - including for newly created sandboxes. If a sandbox really is wedged, delete and recreate it.
 
