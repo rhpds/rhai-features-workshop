@@ -7,6 +7,14 @@ metadata:
     {{- include "mortgage-ai.nemo-guardrails.labels" . | nindent 4 }}
 data:
   config.yaml: |
+    # The rails below are all local actions (regex and PII detection), so none of them
+    # needs the LLM. Without passthrough, NeMo still runs its default dialog step
+    # (generate_user_intent) after the input rails, and that step calls the model with
+    # a hardcoded stop= argument (actions/llm/utils.py). The MaaS model is Bedrock-hosted
+    # and rejects stopSequences, so the call returns 400, the rail raises, and the
+    # Playground reports "[guardrail_service_unavailable]". Passthrough skips intent
+    # generation and runs only the input/output rails, which is all this config declares.
+    passthrough: True
     models:
       - type: main
         engine: openai
