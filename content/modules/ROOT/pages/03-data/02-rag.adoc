@@ -133,6 +133,7 @@ metadata:
   name: global-prompts
   labels:
     opendatahub.io/global-mlflow-workspace: mlflow
+----
 ====
 
 TIP: RAG provides the facts. The system prompt provides the personality. Production AI assistants need both. The GenAI Playground lets you iterate on each independently.

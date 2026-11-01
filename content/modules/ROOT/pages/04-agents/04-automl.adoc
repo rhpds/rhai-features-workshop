@@ -34,6 +34,8 @@ By the end of this section, you will be able to:
 image::automl-create.png[Run AutoML experiment,link=self,window=blank,width=700]
 
 . On the left side, under *Documents*, select the S3 connection *automl* from the dropdown. Click *Select file from bucket*, then *Browse bucket* and select `cleaned_loan_data.csv`. This is a synthetic dataset of historical loan applications with known outcomes.
++
+image::automl-select-documents.png[AutoML experiment form with the automl S3 connection selected and cleaned_loan_data.csv chosen from the bucket,link=self,window=blank,width=700]
 
 . On the right side, configure the experiment details:
 +
