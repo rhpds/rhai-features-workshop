@@ -1,0 +1,62 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ragas-bucket-setup-v{{ .Values.job.version }}
+  namespace: {{ include "workshop.namespace" . }}
+spec:
+  backoffLimit: {{ .Values.job.backoffLimit }}
+  template:
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: download-data
+          image: docker.io/curlimages/curl:latest
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Downloading {{ .Values.dataFile }}..."
+              curl -fsSL {{ .Values.dataUrl }} -o /data/{{ .Values.dataFile }}
+              echo "Download complete."
+      containers:
+        - name: setup
+          image: {{ .Values.job.image }}
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: minio_root_user
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: minio-secret
+                  key: minio_root_password
+            - name: AWS_DEFAULT_REGION
+              value: {{ .Values.region }}
+            - name: AWS_S3_ENDPOINT
+              value: http://minio-service.{{ include "workshop.namespace" . }}.svc.cluster.local:9000
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Waiting for MinIO..."
+              until aws s3 ls --endpoint-url $AWS_S3_ENDPOINT > /dev/null 2>&1; do
+                sleep 3
+              done
+
+              aws s3 mb s3://{{ .Values.bucket }} --endpoint-url $AWS_S3_ENDPOINT || true
+              echo "Bucket '{{ .Values.bucket }}' ready."
+
+              aws s3 cp /data/{{ .Values.dataFile }} s3://{{ .Values.bucket }}/{{ .Values.dataFile }} \
+                --endpoint-url $AWS_S3_ENDPOINT
+              echo "Uploaded {{ .Values.dataFile }} to {{ .Values.bucket }} bucket."
+      volumes:
+        - name: data
+          emptyDir: {}

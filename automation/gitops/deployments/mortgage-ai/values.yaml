@@ -237,7 +237,7 @@ mlflow:
   # How long the wait-for-mlflow init container blocks before starting the API
   # anyway. MLflow is owned by a different Application, so this is what makes
   # tracing independent of sync ordering.
-  waitTimeoutSeconds: 600
+  waitTimeoutSeconds: 900
   # RBAC resources for MLflow server access (skipped when kagenti.mlflow.autoManaged=true)
   rbac:
     enabled: true  # Enable when deploying with RHOAI MLflow

@@ -24,3 +24,22 @@ roleRef:
   kind: ClusterRole
   name: {{ .Values.rbac.role }}
 {{- end }}
+---
+# Grants the workshop user access to EvalHub evaluations in their namespace.
+# The eval-hub BFF checks "get evaluations.trustyai.opendatahub.io" via a
+# SubjectAccessReview before allowing any API call.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: evalhub-user-access
+  namespace: {{ include "workshop.namespace" . }}
+  labels:
+    app.kubernetes.io/component: workshop-rbac
+subjects:
+  - kind: User
+    apiGroup: rbac.authorization.k8s.io
+    name: {{ .Values.username }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: trustyai-service-operator-evalhub-manager-role

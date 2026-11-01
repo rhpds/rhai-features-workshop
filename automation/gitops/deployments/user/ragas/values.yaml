@@ -1,0 +1,11 @@
+username: user1
+namespacePrefix: wksp
+
+bucket: ragas-eval-data
+region: wonderland
+dataFile: ragas-fedaura-testdata.jsonl
+dataUrl: https://raw.githubusercontent.com/rh-aiservices-bu/fed-aura-capital-rhai-workshop/main/notebooks/data/ragas-fedaura-testdata.jsonl
+job:
+  image: amazon/aws-cli
+  backoffLimit: 4
+  version: 1

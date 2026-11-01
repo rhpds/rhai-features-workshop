@@ -126,7 +126,9 @@ data:
     fi
 
     log "--- upload opencode config ---"
-    sed "s|__LLM_BASE_URL__|${LLM_BASE_URL}|g" /scripts/opencode-config.json > /tmp/opencode.jsonc
+    sed -e "s|__LLM_BASE_URL__|${LLM_BASE_URL}|g" \
+        -e "s|__LLM_MODEL__|${LLM_MODEL}|g" \
+        /scripts/opencode-config.json > /tmp/opencode.jsonc
     retry 5 5 osh sandbox exec --name "$SANDBOX" -- mkdir -p /sandbox/.config/opencode
     retry 5 5 osh sandbox upload "$SANDBOX" /tmp/opencode.jsonc /sandbox/.config/opencode/opencode.jsonc \
       || fail "config upload failed"

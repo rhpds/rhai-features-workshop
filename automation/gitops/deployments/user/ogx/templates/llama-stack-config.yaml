@@ -33,15 +33,6 @@ data:
           max_tokens: ${env.VLLM_MAX_TOKENS_1:=4096}
           tls_verify: ${env.VLLM_TLS_VERIFY:=true}
       {{- end }}
-      {{- if .Values.tinyllama.enabled }}
-      - provider_id: vllm-inference-tinyllama
-        provider_type: remote::vllm
-        config:
-          api_token: ${env.VLLM_API_TOKEN_TINYLLAMA:=fake}
-          base_url: {{ .Values.tinyllama.baseUrl }}
-          max_tokens: ${env.VLLM_MAX_TOKENS_TINYLLAMA:={{ .Values.tinyllama.maxTokens }}}
-          tls_verify: false
-      {{- end }}
       vector_io:
       - provider_id: pgvector
         provider_type: remote::pgvector
@@ -148,13 +139,6 @@ data:
         model_type: llm
         metadata:
           display_name: {{ .Values.remotellm.id }}
-      {{- end }}
-      {{- if .Values.tinyllama.enabled }}
-      - provider_id: vllm-inference-tinyllama
-        model_id: tinyllama
-        model_type: llm
-        metadata:
-          display_name: TinyLlama-1.1B-Chat
       {{- end }}
       vector_stores: []
     external_providers_dir: /opt/app-root/.llama/providers.d
