@@ -216,7 +216,7 @@ HTTP_STATUS: 403
 +
 image::security-openshell-policy-denied-403.png[OpenCode terminal showing the policy_denied response from OpenShell blocking the POST at layer l7,link=self,window=blank,width=700]
 
-. Verify that reads still work, ask OpenCode:
+. Verify that reads still work. Ask OpenCode:
 +
 [source,text]
 ----
@@ -229,6 +229,8 @@ Check if we can still reach GitHub by running: curl -s -o /dev/null -w '%{http_c
 ----
 +
 image::security-openshell-read-200.png[OpenCode terminal showing a successful 200 response for a GitHub GET request after policy enforcement,link=self,window=blank,width=700]
++
+A `200` from the same host that just refused the upload. *The sandbox blocked the write, not GitHub itself.*
 +
 The agent can still research on GitHub, which is most of what a coding agent legitimately needs it for.
 
