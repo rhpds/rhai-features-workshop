@@ -18,12 +18,6 @@ metadata:
     security.opendatahub.io/enable-auth: 'false'
   labels:
     {{- include "mortgage-ai.nemo-guardrails.labels" . | nindent 4 }}
-    # The RHOAI dashboard only lists guardrails instances carrying this label. Without it
-    # the GenAI Playground sees no guardrails in the project and bootstraps its own
-    # placeholder NemoGuardrails whose model points at http://placeholder.invalid/v1, so
-    # every check then fails with "[guardrail_service_unavailable] guardrail service
-    # unavailable" even though this instance is running and healthy.
-    opendatahub.io/dashboard: "true"
 spec:
   nemoConfigs:
     - name: nemo-guardrails-config
