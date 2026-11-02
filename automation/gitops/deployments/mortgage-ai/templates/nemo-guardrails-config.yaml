@@ -7,10 +7,25 @@ metadata:
     {{- include "mortgage-ai.nemo-guardrails.labels" . | nindent 4 }}
 data:
   config.yaml: |
+    # The rails below are all local actions (regex and PII detection), so none of them
+    # needs the LLM. Without passthrough, NeMo still runs its default dialog step
+    # (generate_user_intent) after the input rails, and that step calls the model with
+    # a hardcoded stop= argument (actions/llm/utils.py). The MaaS model is Bedrock-hosted
+    # and rejects stopSequences, so the call returns 400, the rail raises, and the
+    # Playground reports "[guardrail_service_unavailable]". Passthrough skips intent
+    # generation and runs only the input/output rails, which is all this config declares.
+    passthrough: True
     models:
       - type: main
         engine: openai
         model: {{ .Values.nemoGuardrails.llm.modelName | default .Values.secrets.LLM_MODEL | quote }}
+        # Without this, NeMo does not pick up the OPENAI_API_KEY the CR injects from
+        # nemo-guardrails-api-key and sends a runtime-provided value instead, which the
+        # MaaS litellm rejects: "[401] Authentication Error, LiteLLM Virtual Key expected.
+        # Received=runtime-provided, expected to start with 'sk-'". Every rail then fails
+        # with an internal error, which the Playground surfaces as
+        # "[guardrail_service_unavailable] guardrail service unavailable".
+        api_key_env_var: OPENAI_API_KEY
         parameters:
           {{- if .Values.nemoGuardrails.proxy.enabled }}
           base_url: "http://nemo-guardrails-proxy:8081/v1"
