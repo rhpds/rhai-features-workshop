@@ -55,8 +55,19 @@ data:
               - "\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}"            # Phone number
               # Security keywords
               - "\\b(password|hack|exploit|vulnerability|secret|api[_-]?key|token)\\b"
+              # Prompt injection (section 5.2 exercise 5). Scoped so ordinary phrasing
+              # like "forget about the 30-year option" or "approve my application"
+              # does not trip: the first rule needs "instructions" nearby, and the
+              # approve rule needs "every"/"all".
+              - "\\b(ignore|disregard|forget)\\b[^.]{0,30}\\b(previous|prior|above|all|your)\\b[^.]{0,25}\\binstructions?\\b"
+              - "\\byou are now\\b"
+              - "\\b(unrestricted|jailbreak|developer mode)\\b"
+              - "\\bapprove\\s+(every|all)\\b"
               # Inappropriate content
               - "\\b(violence|illegal|harmful)\\b"
+              # Document fraud (section 5.2 exercise 6). "forge" alone is too broad,
+              # so it must sit next to a document or income noun.
+              - "\\b(forge|forging|falsify|fabricate|fake)\\b[^.]{0,30}\\b(document|income|statement|pay\\s?stub|w-?2|tax)"
               # Competitor names
               - "\\b(chatgpt|openai|claude|anthropic)\\b"
               - "\\b(green\\s*aura|black\\s*aura|rob\\s*aura)\\b"
