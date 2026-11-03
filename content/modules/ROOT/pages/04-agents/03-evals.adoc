@@ -64,6 +64,8 @@ stringData:
 EOF
 ----
 +
+IMPORTANT: Replace `<paste-your-api-key>` with your API key before you press Enter. If you run the command with the placeholder still there, the Secret is created with that text and *Validate connection* fails a few steps later.
++
 TIP: If you no longer have your API key, you can always go back to the *API Keys* tab and create a new one.
 +
 TIP: If you get an error, please log in to the OpenShift cluster again with the following command and then re-run the secret creation command:
