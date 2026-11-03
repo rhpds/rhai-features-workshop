@@ -45,7 +45,7 @@ To consume a MaaS endpoint from code or a tool, you need a scoped API key. Let's
 
 . Give the key a name, for example `my-key`. You can add a description if you wish.
 
-. Select the *Premium Tier* subscription. The subscription defines the model you have access to and the rate limits for the key. Observe that you have 10,000 tokens per minute as the rate limit for `qwen3-235b-a22b`. 
+. Select the *Premium Tier* subscription. The subscription defines the model you have access to and the rate limits for the key. Observe that you have 100,000 tokens per minute as the rate limit for `qwen3-235b-a22b`. 
 
 . Leave the Expiration as 30 days. Click *Create API Key*.
 +
