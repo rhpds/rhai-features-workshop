@@ -69,7 +69,7 @@ NAME              CREATED              PHASE
 fedaura-opencode  2026-09-17 20:18:56  Ready
 ----
 +
-`Ready` means the sandbox is running and accepting work. The corresponding Kubernetes object is the `+default--fedaura-opencode+` Sandbox you saw in exercise 1.
+`Ready` means the sandbox is running and accepting work. The corresponding Kubernetes object is the `+default--fedaura-opencode+` Sandbox you saw in exercise 10.
 
 . Open a shell inside it:
 +
@@ -174,7 +174,7 @@ WARNING: Give the agent a token, which any real coding agent has, and that reque
 
 == Exercise 13: Enforce Policy to Block Exfiltration
 
-. Go back to the *workbench terminal*, apply the standard policy you fetched in exercise 3:
+. Go back to the *workbench terminal*, apply the standard policy you fetched in exercise 12:
 +
 [source,bash]
 ----
