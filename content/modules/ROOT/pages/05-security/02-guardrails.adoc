@@ -15,7 +15,7 @@ So {company_name} puts a second checkpoint in front of every model - *NeMo Guard
 
 image::fed-aura-platform-architecture-guardrails-focus.svg[NeMo Guardrails highlighted in the Fed Aura Capital security boundary, applying input and output shields in front of the models,link=self,window=blank,width=800]
 
-The individual rules are called *rails*, and they work in two directions. *Input rails* read what the user typed before the model ever sees it - a blocked prompt never reaches {assistant_name} at all. *Output rails* read what the model produced before the user ever sees it, because a model can be argued into saying something the company legally cannot.
+The individual rules are called *rails*, and they work in two directions. *Input rails* read what the user typed before the model ever sees it - in the application, a blocked prompt never reaches {assistant_name} at all. *Output rails* read what the model produced before the user ever sees it, because a model can be argued into saying something the company legally cannot.
 
 In this section you take the security team's side of the table and try to break her: a prompt injection, harmful content, a business-policy violation. Then you read the traces to prove what the rails actually did, and review a Garak report - an automated attack suite that runs hundreds of these attempts so nobody has to do it by hand.
 
@@ -263,7 +263,7 @@ LangGraph
     └── after_input_shield
 ----
 +
-No `agent`, no `ChatOpenAI`, no `output_shield`. The rail matched on the way in, so the graph was abandoned at the first node and the model was never called - which is also why the whole thing took 2.5 seconds instead of twenty.
+No `agent`, no `ChatOpenAI`, no `output_shield`. The rail matched on the way in, so the graph was abandoned at the first node and the model was never called - which is also why the whole thing took 2.5 seconds instead of ten-plus.
 
 . Open *Inputs / Outputs*. Alongside the message and the refusal is the attribute that makes it auditable:
 +
