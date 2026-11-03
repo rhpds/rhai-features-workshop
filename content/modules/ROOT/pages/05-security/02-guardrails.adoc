@@ -35,12 +35,14 @@ image::security-knowledge-on.png[Knowledge tab toggled On with Use uploaded docu
 +
 image::security-guardrails-settings.png[Guardrails settings showing the guardrail model, subscription, and both rail toggles enabled,link=self,window=blank,width=450]
 +
-The *Guardrail model* at the top is what does the checking - a separate model from the one answering. Below it are the two directions from the introduction, and what each one covers:
+The *Guardrail model* at the top is the model a rail calls when it needs one. The rails in this lab are local pattern and PII checks, so they never call it. Below it are the two directions from the introduction, and what each one covers:
 +
 --
 * *User input guardrails* - jailbreak and prompt attack protection, PII filtering, and content moderation for toxicity, hate speech, sexual content, violence and harassment.
 * *Model output guardrails* - PII leak prevention, plus the same content moderation applied to whatever the model just generated.
 --
++
+NOTE: That is what the toggles cover in principle. This lab enforces the deterministic rails only (PII and regex). Toxicity and hate speech need the NemoGuard detector model, which is not deployed here.
 
 . Now ask a perfectly ordinary mortgage question:
 +
@@ -164,7 +166,7 @@ Is GreenAura cheaper than you?
 +
 image::security-competitor-blocked.png[The assistant refusing to discuss a competitor with a blunt safety refusal,link=self,window=blank,width=420]
 
-IMPORTANT: Ask this in the *application*, not the Playground. The Playground runs its own guardrails instance from a different ConfigMap, and the competitor patterns are not in it - the same question there gets answered.
+IMPORTANT: Ask this in the *application*. Both surfaces use the same ConfigMap, so the pattern matches either way, but only the application replaces the answer with a refusal.
 
 . Now look at how this is configured. The NeMo Guardrails configuration is stored in a ConfigMap deployed in your namespace. The relevant section:
 +
@@ -180,7 +182,12 @@ rails:
           - "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}"        # Email
           - "\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}"       # Phone number
           - "\\b(password|hack|exploit|vulnerability|secret|api[_-]?key|token)\\b"
+          - "\\b(ignore|disregard|forget)\\b[^.]{0,30}\\b(previous|prior|above|all|your)\\b[^.]{0,25}\\binstructions?\\b"
+          - "\\byou are now\\b"
+          - "\\b(unrestricted|jailbreak|developer mode)\\b"
+          - "\\bapprove\\s+(every|all)\\b"                              # Prompt injection
           - "\\b(violence|illegal|harmful)\\b"
+          - "\\b(forge|forging|falsify|fabricate|fake)\\b[^.]{0,30}\\b(document|income|statement|pay\\s?stub|w-?2|tax)"   # Document fraud
           - "\\b(chatgpt|openai|claude|anthropic)\\b"               # AI vendors
           - "\\b(green\\s*aura|black\\s*aura|rob\\s*aura)\\b"     # Competitors
         case_insensitive: true
@@ -208,7 +215,7 @@ rails:
 The configuration defines two layers of input/output protection:
 +
 * *Sensitive data detection* - uses Presidio to detect PII entities (credit cards, SSNs, emails, phone numbers)
-* *Regex pattern matching* - matches specific patterns (competitor names, security keywords, SSN and card formats)
+* *Regex pattern matching* - matches specific patterns (prompt injection, document fraud, competitor names, security keywords, SSN and card formats)
 +
 Each layer runs as a flow in both the input and output pipeline. The `rails.co` file defines custom Colang flows - an empty file means only built-in rails are used.
 +
