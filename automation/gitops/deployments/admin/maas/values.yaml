@@ -21,10 +21,15 @@ gateway:
 # content/modules/ROOT/pages/02-inference/04-access-a-model-through-maas.adoc:
 #
 #   Free Tier     100 tokens / minute
-#   Premium Tier  10,000 tokens / minute
+#   Premium Tier  100,000 tokens / minute
 #
 # The migrated manifests only had a single "free" subscription of 10000 tokens
 # per hour, so the lab asked users to choose a tier that did not exist.
+#
+# Premium is 100,000 and not 10,000 because the RAGAS benchmark in 4.3 runs four
+# judge metrics per test case, each carrying the retrieved context, and 10,000
+# tokens per minute was exhausted in seconds: the gateway returned 429 and
+# EvalHub failed the run with "Too Many Requests".
 subscriptions:
   - name: free
     displayName: Free Tier
@@ -33,7 +38,7 @@ subscriptions:
     priority: 10
   - name: premium
     displayName: Premium Tier
-    tokenLimit: 10000
+    tokenLimit: 100000
     window: 1m
     priority: 20
 # Repairs the usage-logs OpenTelemetryCollector that the maas-controller creates
