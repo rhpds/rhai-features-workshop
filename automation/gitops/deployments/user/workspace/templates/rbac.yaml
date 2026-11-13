@@ -25,9 +25,9 @@ roleRef:
   name: {{ .Values.rbac.role }}
 {{- end }}
 ---
-# Grants the workshop user access to EvalHub evaluations in their namespace.
-# The eval-hub BFF checks "get evaluations.trustyai.opendatahub.io" via a
-# SubjectAccessReview before allowing any API call.
+# Grants the workshop user access to EvalHub in their own namespace; the BFF
+# SARs trustyai resources before any API call. The model catalog's Safety tab
+# SARs against rhoai-model-registries instead - see admin/model-catalog's RBAC.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:

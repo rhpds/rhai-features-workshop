@@ -1,0 +1,40 @@
+{{- if .Values.catalogUserRbac.enabled }}
+{{- $count := required "user.count is required (injected from bootstrap-infra)" .Values.user.count | int }}
+{{- $prefix := required "user.prefix is required (injected from bootstrap-infra)" .Values.user.prefix }}
+---
+# Lets non-admin users open the model card's Performance / Safety and security
+# insights tabs; without it model-registry-ui and eval-hub both 403 and the tabs
+# spin forever. Keep namespace-scoped: a cluster-wide list leaks other projects.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: model-catalog-workshop-user-reader
+  namespace: {{ .Values.registriesNamespace }}
+  labels:
+    app.kubernetes.io/component: model-catalog
+rules:
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["trustyai.opendatahub.io"]
+    resources: ["evalhubs", "lmevaljobs", "evaluations"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: model-catalog-workshop-user-reader
+  namespace: {{ .Values.registriesNamespace }}
+  labels:
+    app.kubernetes.io/component: model-catalog
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: model-catalog-workshop-user-reader
+subjects:
+{{- range $index := until $count }}
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: {{ $prefix }}{{ add $index 1 }}
+{{- end }}
+{{- end }}

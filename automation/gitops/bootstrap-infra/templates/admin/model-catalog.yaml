@@ -18,6 +18,13 @@ spec:
     repoURL: {{ .Values.bootstrap.repoURL }}
     targetRevision: {{ .Values.bootstrap.targetRevision }}
     path: {{ include "bootstrap.path" (dict "ctx" . "chart" "admin/model-catalog") }}
+    helm:
+      valuesObject:
+        # Needed by templates/catalog-user-rbac.yaml, which binds the model
+        # catalog reader Role to user1..userN by name.
+        user:
+          count: {{ .Values.user.count }}
+          prefix: {{ .Values.user.prefix | quote }}
   syncPolicy:
     automated:
       prune: true

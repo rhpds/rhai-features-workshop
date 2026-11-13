@@ -1,5 +1,13 @@
 registriesNamespace: rhoai-model-registries
 dashboardNamespace: redhat-ods-applications
+# Binds the model catalog reader Role to user1..userN - see
+# templates/catalog-user-rbac.yaml. Injected from bootstrap-infra (user.*) so it
+# tracks num_users; nothing is baked in here and the template fails if unset.
+catalogUserRbac:
+  enabled: true
+user:
+  count: ""
+  prefix: ""
 # Job that force-applies the model-catalog-sources ConfigMap. It runs with
 # ttlSecondsAfterFinished, so ArgoCD re-creates it on every sync of a new revision.
 catalogSources:
